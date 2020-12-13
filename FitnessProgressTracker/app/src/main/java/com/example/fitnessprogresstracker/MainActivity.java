@@ -50,8 +50,7 @@ public class MainActivity extends AppCompatActivity {
 
         if(user != null) {
             finish();
-            Intent intent = new Intent(MainActivity.this, SecondActivity.class);
-            startActivity(intent);
+            startActivity(new Intent(MainActivity.this, SecondActivity.class));
         }
 
         Login.setOnClickListener(new View.OnClickListener() {
@@ -71,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void validate(String userName, String userPassword) {
 
-        progressDialog.setMessage("Example.");
+        progressDialog.setMessage("Verifying Login Details..");
         progressDialog.show();
 
         firebaseAuth.signInWithEmailAndPassword(userName, userPassword).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
