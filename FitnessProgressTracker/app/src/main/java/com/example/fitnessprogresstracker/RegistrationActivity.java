@@ -44,8 +44,6 @@ public class RegistrationActivity extends AppCompatActivity {
     private static int PICK_IMAGE = 123;
     Uri imagePath;
 
-
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if(requestCode == PICK_IMAGE && resultCode == RESULT_OK && data.getData() != null) {
