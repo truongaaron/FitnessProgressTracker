@@ -52,10 +52,10 @@ public class SecondActivity extends AppCompatActivity {
                 Logout();
                 break;
             }
-            case R.id.profileMenu: {
-                startActivity(new Intent(SecondActivity.this, ProfileActivity.class));
-                break;
-            }
+//            case R.id.profileMenu: {
+//                startActivity(new Intent(SecondActivity.this, ProfileActivity.class));
+//                break;
+//            }
         }
         return super.onOptionsItemSelected(item);
     }

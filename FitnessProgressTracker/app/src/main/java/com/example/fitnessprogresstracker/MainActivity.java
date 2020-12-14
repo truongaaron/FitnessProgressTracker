@@ -1,10 +1,13 @@
 package com.example.fitnessprogresstracker;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -113,4 +116,5 @@ public class MainActivity extends AppCompatActivity {
             firebaseAuth.signOut();
         }
     }
+
 }

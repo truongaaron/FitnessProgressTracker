@@ -1,5 +1,6 @@
 package com.example.fitnessprogresstracker;
 
+import android.graphics.Bitmap;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -65,7 +66,7 @@ public class HomeFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        int age = 22;
+
         View view = inflater.inflate(R.layout.fragment_home, container, false);
         webView = (WebView) view.findViewById(R.id.wvCalorieCalc);
 
@@ -75,8 +76,26 @@ public class HomeFragment extends Fragment {
         webSettings.setJavaScriptEnabled(true);
         webView.setWebViewClient(new WebViewClient());
 
-        webView.loadUrl("javascript:document.getElementById('cage').value='" + age + "'");
-        webView.loadUrl("javascript:(function() { var z = document.getElementById('signInButton').click(); })()");
+
+        webView.setWebViewClient(new WebViewClient() {
+            public void onPageFinished(WebView view, String url) {
+                webView.loadUrl("javascript:document.getElementsByTagName('input')[1].value = '" + 22 + "';" +
+                        "document.getElementsByTagName('input')[2].checked = '" + true + "';" +
+                        "document.getElementsByTagName('input')[4].value = '" + 5 + "';" +
+                        "document.getElementsByTagName('input')[5].value = '" + 7 + "';" +
+                        "document.getElementsByTagName('input')[6].value = '" + 141 + "';" +
+                        "document.getElementById('cactivity').options.selectedIndex = '" + 4 + "';" +
+                        "document.getElementsByTagName('input')[24].click();");
+
+                super.onPageFinished(view, url);
+                // By 'input' tag: Age: [1], Male: [2] as 'm', female: [3] as 'f', Feet: [4], Inches: [5], Weight: [6]
+                // document.getElementsByTagName('input')[7].click();"
+                //javascript:document.getElementsByName('cage').value = '"+age+"';
+            }
+        });
+
+
+
 
         // Inflate the layout for this fragment
         return view;
