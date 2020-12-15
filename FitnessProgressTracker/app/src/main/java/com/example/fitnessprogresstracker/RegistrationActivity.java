@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -28,6 +29,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
 
@@ -69,6 +71,14 @@ public class RegistrationActivity extends AppCompatActivity {
         firebaseStorage = FirebaseStorage.getInstance();
 
         storageReference = firebaseStorage.getReference();
+        storageReference.child("Default_Profile_Picture.jpg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                imagePath = uri;
+                Log.d("URL2", uri.toString());
+                Picasso.get().load(uri).fit().centerCrop().into(userProfilePic);
+            }
+        });
 
         userProfilePic.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -130,7 +140,7 @@ public class RegistrationActivity extends AppCompatActivity {
         age = userAge.getText().toString();
 
 
-        if(name.isEmpty() || password.isEmpty() || email.isEmpty() || age.isEmpty() || imagePath == null) {
+        if(name.isEmpty() || password.isEmpty() || email.isEmpty() || age.isEmpty()) {
             Toast.makeText(this, "Please enter all the details", Toast.LENGTH_SHORT).show();
         } else {
             result = true;
@@ -147,7 +157,7 @@ public class RegistrationActivity extends AppCompatActivity {
                 public void onComplete(@NonNull Task<Void> task) {
                     if(task.isSuccessful()) {
                         sendUserData();
-                        Toast.makeText(RegistrationActivity.this, "Successfully Registered, Verifiction email sent!", Toast.LENGTH_LONG).show();
+                        Toast.makeText(RegistrationActivity.this, "Successfully Registered, Verification email sent!", Toast.LENGTH_LONG).show();
                         firebaseAuth.signOut();
                         finish();
                         startActivity(new Intent(RegistrationActivity.this, MainActivity.class));
