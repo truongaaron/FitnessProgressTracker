@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/blogFragment"
+        android:icon="@drawable/ic_blog"
+        android:title="Blogs" />
+    <item
+        android:id="@+id/postFragment"
+        android:icon="@drawable/ic_add"
+        android:title="Post" />
+    <item
+        android:id="@+id/networkFragment"
+        android:icon="@drawable/ic_network"
+        android:title="Network" />
+
+</menu>
