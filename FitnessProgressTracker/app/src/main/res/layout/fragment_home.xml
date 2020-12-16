@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:visibility="visible"
     tools:context=".HomeFragment">
 
     <EditText
@@ -13,90 +14,55 @@
         android:ems="10"
         android:hint="Age"
         android:inputType="textPersonName"
+        android:text="21"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.487"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.107" />
-
-    <RadioButton
-        android:id="@+id/rbCalcFemale"
-        android:layout_width="93dp"
-        android:layout_height="50dp"
-        android:text="F"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.676"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.198" />
-
-    <EditText
-        android:id="@+id/etCalcFeet"
-        android:layout_width="95dp"
-        android:layout_height="47dp"
-        android:layout_marginTop="16dp"
-        android:ems="10"
-        android:hint="feet"
-        android:inputType="number"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.316"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.276" />
+        app:layout_constraintTop_toBottomOf="@+id/textView8"
+        app:layout_constraintVertical_bias="0.04" />
 
     <EditText
         android:id="@+id/etCalcLbs"
-        android:layout_width="210dp"
-        android:layout_height="47dp"
+        android:layout_width="216dp"
+        android:layout_height="46dp"
         android:ems="10"
         android:hint="lbs."
         android:inputType="number"
+        android:text="169"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintHorizontal_bias="0.487"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.396" />
-
-    <RadioButton
-        android:id="@+id/rbCalcMale"
-        android:layout_width="93dp"
-        android:layout_height="50dp"
-        android:text="M"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.314"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.198" />
+        app:layout_constraintTop_toBottomOf="@+id/etCalcInches"
+        app:layout_constraintVertical_bias="0.029" />
 
     <TextView
         android:id="@+id/textView9"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
         android:text="Gender"
         android:textSize="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/rbCalcMale"
-        app:layout_constraintHorizontal_bias="0.388"
+        app:layout_constraintEnd_toStartOf="@+id/rgMaleFemale"
+        app:layout_constraintHorizontal_bias="0.181"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.207" />
+        app:layout_constraintTop_toBottomOf="@+id/etCalcAge"
+        app:layout_constraintVertical_bias="0.054" />
 
     <TextView
+        android:id="@+id/textView10"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Height"
         android:textSize="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/etCalcFeet"
-        app:layout_constraintHorizontal_bias="0.341"
+        app:layout_constraintHorizontal_bias="0.432"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.298" />
+        app:layout_constraintTop_toBottomOf="@+id/rgMaleFemale"
+        app:layout_constraintVertical_bias="0.046" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -105,25 +71,40 @@
         android:textSize="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/etCalcLbs"
-        app:layout_constraintHorizontal_bias="0.289"
+        app:layout_constraintHorizontal_bias="0.484"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.397" />
+        app:layout_constraintTop_toBottomOf="@+id/etCalcFeet"
+        app:layout_constraintVertical_bias="0.041" />
 
     <EditText
         android:id="@+id/etCalcInches"
         android:layout_width="95dp"
         android:layout_height="47dp"
-        android:layout_marginTop="16dp"
         android:ems="10"
         android:hint="inches"
         android:inputType="number"
+        android:text="9"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.68"
+        app:layout_constraintHorizontal_bias="0.674"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.275" />
+        app:layout_constraintTop_toBottomOf="@+id/rgMaleFemale"
+        app:layout_constraintVertical_bias="0.03" />
+
+    <EditText
+        android:id="@+id/etCalcFeet"
+        android:layout_width="95dp"
+        android:layout_height="47dp"
+        android:ems="10"
+        android:hint="feet"
+        android:inputType="number"
+        android:text="5"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.303"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rgMaleFemale"
+        app:layout_constraintVertical_bias="0.03" />
 
     <TextView
         android:id="@+id/textView8"
@@ -138,25 +119,27 @@
         app:layout_constraintVertical_bias="0.022" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/btnCalculate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Button"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginTop="40dp"
+        android:text="Calculate"
+        app:layout_constraintBottom_toBottomOf="@+id/wvCalorieCalc"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.597" />
+        app:layout_constraintTop_toBottomOf="@+id/spinnerActivity"
+        app:layout_constraintVertical_bias="0.03" />
 
     <Spinner
         android:id="@+id/spinnerActivity"
         android:layout_width="210dp"
         android:layout_height="33dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/wvCalorieCalc"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintHorizontal_bias="0.487"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/etCalcLbs"
+        app:layout_constraintVertical_bias="0.106" />
 
     <WebView
         android:id="@+id/wvCalorieCalc"
@@ -165,5 +148,33 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <RadioGroup
+        android:id="@+id/rgMaleFemale"
+        android:layout_width="228dp"
+        android:layout_height="49dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@+id/btnCalculate"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.535"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/etCalcAge"
+        app:layout_constraintVertical_bias="0.074">
+
+        <RadioButton
+            android:id="@+id/rbCalcMale"
+            android:layout_width="105dp"
+            android:layout_height="50dp"
+            android:checked="true"
+            android:text="M"
+            android:onClick="onRadioButtonClicked"/>
+
+        <RadioButton
+            android:id="@+id/rbCalcFemale"
+            android:layout_width="105dp"
+            android:layout_height="50dp"
+            android:text="F"
+            android:onClick="onRadioButtonClicked"/>
+    </RadioGroup>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
