@@ -23,7 +23,7 @@ public class JournalActivity extends AppCompatActivity {
         home = (MenuItem) findViewById(R.id.homeFragment);
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomJournalNavView);
-        NavController navController = Navigation.findNavController(this, R.id.fragment);
+        NavController navController = Navigation.findNavController(this, R.id.journalNavFragment);
 
         NavigationUI.setupWithNavController(bottomNavigationView, navController);
     }
