@@ -33,6 +33,7 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
     private Spinner activity;
     private Button calculate;
     String age, feet, inches, lbs, gender, activityStr;
+    double activityLevel;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -97,10 +98,12 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 switch (checkedId) {
                     case R.id.rbCalcMale:
-
+                        gender = "m";
+                        Toast.makeText(getContext(), gender, Toast.LENGTH_SHORT).show();
                         break;
                     case R.id.rbCalcFemale:
-
+                        gender = "f";
+                        Toast.makeText(getContext(), gender, Toast.LENGTH_SHORT).show();
                         break;
                 }
             }
@@ -133,6 +136,13 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
         String text = parent.getItemAtPosition(position).toString();
         // Toast.makeText(parent.getContext(), Integer.toString(position), Toast.LENGTH_SHORT).show();
         activityStr = Integer.toString(position);
+        setActivityLevel(activityStr);
+    }
+
+    public void setActivityLevel(String activityStr) {
+        double[] activityLevels = {1, 1.2, 1.375, 1.465, 1.55, 1.75, 1.9};
+        activityLevel = activityLevels[Integer.parseInt(activityStr)];
+        Toast.makeText(getContext(), Double.toString(activityLevel), Toast.LENGTH_SHORT).show();
     }
 
     @Override
