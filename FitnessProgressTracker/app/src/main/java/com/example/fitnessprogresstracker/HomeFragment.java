@@ -5,6 +5,7 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -87,11 +88,8 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
         spinner.setOnItemSelectedListener(this);
 
 
-        age = calcAge.getText().toString();
-        feet = calcFeet.getText().toString();
-        inches = calcInches.getText().toString();
-        lbs = calcLbs.getText().toString();
 
+        gender = "m";
 
         maleFemale.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
@@ -99,11 +97,9 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
                 switch (checkedId) {
                     case R.id.rbCalcMale:
                         gender = "m";
-                        Toast.makeText(getContext(), gender, Toast.LENGTH_SHORT).show();
                         break;
                     case R.id.rbCalcFemale:
                         gender = "f";
-                        Toast.makeText(getContext(), gender, Toast.LENGTH_SHORT).show();
                         break;
                 }
             }
@@ -112,7 +108,16 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
         calculate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                age = calcAge.getText().toString();
+                feet = calcFeet.getText().toString();
+                inches = calcInches.getText().toString();
+                lbs = calcLbs.getText().toString();
 
+                if(gender.equals("m")) {
+                    double bmr = Math.ceil(calculateBMRForMen(age, feet, inches, lbs)) * activityLevel;
+                    int bmrFinal = (int)bmr;
+                    Toast.makeText(getActivity(), "Maintain Weight: " + Integer.toString(bmrFinal) + " calories", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
@@ -131,18 +136,36 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
         calculate = (Button) view.findViewById(R.id.btnCalculate);
     }
 
-    @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        String text = parent.getItemAtPosition(position).toString();
-        // Toast.makeText(parent.getContext(), Integer.toString(position), Toast.LENGTH_SHORT).show();
-        activityStr = Integer.toString(position);
-        setActivityLevel(activityStr);
-    }
-
     public void setActivityLevel(String activityStr) {
         double[] activityLevels = {1, 1.2, 1.375, 1.465, 1.55, 1.75, 1.9};
         activityLevel = activityLevels[Integer.parseInt(activityStr)];
-        Toast.makeText(getContext(), Double.toString(activityLevel), Toast.LENGTH_SHORT).show();
+    }
+
+    public double calculateBMRForMen(String age, String feet, String inches, String lbs) {
+        int ageInt = Integer.parseInt(age);
+        return (10*lbs_to_kg(lbs)) + (6.25*(ft_to_cm(feet) + in_to_cm(inches))) - (5 * ageInt) + 5;
+    }
+
+    public double ft_to_cm(String feet) {
+        int ft = Integer.parseInt(feet);
+        return ft * 30.48;
+    }
+
+    public double in_to_cm(String inch) {
+        int in = Integer.parseInt(inch);
+        return in * 2.54;
+    }
+
+    public double lbs_to_kg(String lbs) {
+        int lb = Integer.parseInt(lbs);
+        return lb * 0.453592;
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        String text = parent.getItemAtPosition(position).toString();
+        activityStr = Integer.toString(position);
+        setActivityLevel(activityStr);
     }
 
     @Override
