@@ -27,7 +27,6 @@ import android.widget.Toast;
  */
 public class HomeFragment extends Fragment implements AdapterView.OnItemSelectedListener {
 
-    private WebView webView;
     private EditText calcAge, calcFeet, calcInches, calcLbs;
     private RadioGroup maleFemale;
     private Spinner activity;
@@ -85,39 +84,33 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
         spinner.setAdapter(adapter);
         spinner.setOnItemSelectedListener(this);
 
-        webView.loadUrl("https://www.calculator.net/calorie-calculator.html");
-
-        WebSettings webSettings = webView.getSettings();
-        webSettings.setJavaScriptEnabled(true);
-        webView.setWebViewClient(new WebViewClient());
 
         age = calcAge.getText().toString();
         feet = calcFeet.getText().toString();
         inches = calcInches.getText().toString();
         lbs = calcLbs.getText().toString();
 
-        calculate.setOnClickListener(new View.OnClickListener() {
+
+        maleFemale.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
-            public void onClick(View v) {
-                webView.setWebViewClient(new WebViewClient() {
-                    public void onPageFinished(WebView view, String url) {
-                        webView.loadUrl("javascript:document.getElementsByTagName('input')[1].value = '" + age + "';" +
-                                "document.getElementsByTagName('input')[" + gender + "].checked = '" + true + "';" +
-                                "document.getElementsByTagName('input')[4].value = '" + feet + "';" +
-                                "document.getElementsByTagName('input')[5].value = '" + inches + "';" +
-                                "document.getElementsByTagName('input')[6].value = '" + lbs + "';" +
-                                "document.getElementById('cactivity').options.selectedIndex = '" + activityStr + "';" +
-                                "document.getElementsByTagName('input')[24].click();");
-                        super.onPageFinished(view, url);
-                        // By 'input' tag: Age: [1], Male: [2] as 'm', female: [3] as 'f', Feet: [4], Inches: [5], Weight: [6]
-                        // document.getElementsByTagName('input')[7].click();"
-                        //javascript:document.getElementsByName('cage').value = '"+age+"';
-                    }
-                });
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch (checkedId) {
+                    case R.id.rbCalcMale:
+
+                        break;
+                    case R.id.rbCalcFemale:
+
+                        break;
+                }
             }
         });
 
+        calculate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
+            }
+        });
 
 
         // Inflate the layout for this fragment
@@ -125,7 +118,6 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
     }
 
     public void setUpUIViews(View view) {
-        webView = (WebView) view.findViewById(R.id.wvCalorieCalc);
         calcAge = (EditText) view.findViewById(R.id.etCalcAge);
         calcFeet = (EditText) view.findViewById(R.id.etCalcFeet);
         calcInches = (EditText) view.findViewById(R.id.etCalcInches);
@@ -133,21 +125,6 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
         maleFemale = (RadioGroup) view.findViewById(R.id.rgMaleFemale);
         activity = (Spinner) view.findViewById(R.id.spinnerActivity);
         calculate = (Button) view.findViewById(R.id.btnCalculate);
-    }
-
-    public void onRadioButtonClicked(View view) {
-        boolean checked = ((RadioButton) view).isChecked();
-
-        switch(view.getId()) {
-            case R.id.rbCalcMale:
-                if (checked)
-                    gender = "2"; // Position of Male Radio Button in the document page
-                    break;
-            case R.id.rbCalcFemale:
-                if (checked)
-                    gender = "3"; // Position of Female Radio Button in the document page
-                    break;
-        }
     }
 
     @Override
