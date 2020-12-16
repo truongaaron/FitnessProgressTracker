@@ -1,12 +1,16 @@
 package com.example.fitnessprogresstracker;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.os.SystemClock;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.Chronometer;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -23,6 +27,12 @@ public class TimerFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
+    private Chronometer chronometer;
+    private Button startTimer, pauseTimer, resetTimer;
+    private long pauseOffset;
+    private boolean running;
+
 
     public TimerFragment() {
         // Required empty public constructor
@@ -53,12 +63,51 @@ public class TimerFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+
     }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_timer, container, false);
+        View view = inflater.inflate(R.layout.fragment_timer, container, false);
+
+        chronometer = (Chronometer) view.findViewById(R.id.chronometer);
+        startTimer = (Button) view.findViewById(R.id.btnTimerStart);
+        pauseTimer = (Button) view.findViewById(R.id.btnTimerPause);
+        resetTimer = (Button) view.findViewById(R.id.btnTimerReset);
+
+        startTimer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!running) {
+                    chronometer.setBase(SystemClock.elapsedRealtime() - pauseOffset);
+                    chronometer.start();
+                    running = true;
+                }
+            }
+        });
+
+        pauseTimer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (running) {
+                    chronometer.stop();
+                    pauseOffset = SystemClock.elapsedRealtime() - chronometer.getBase();
+                    running = false;
+                }
+            }
+        });
+
+        resetTimer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                chronometer.setBase(SystemClock.elapsedRealtime());
+                pauseOffset = 0;
+            }
+        });
+
+        return view;
     }
 }
