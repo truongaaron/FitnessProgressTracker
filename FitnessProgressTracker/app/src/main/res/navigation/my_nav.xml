@@ -5,11 +5,11 @@
     android:id="@+id/my_nav"
     app:startDestination="@id/homeFragment">
 
-    <fragment
-        android:id="@+id/journalFragment"
-        android:name="com.example.fitnessprogresstracker.JournalFragment"
-        android:label="fragment_journal"
-        tools:layout="@layout/fragment_journal" />
+    <activity
+        android:id="@+id/journalActivity"
+        android:name="com.example.fitnessprogresstracker.JournalActivity"
+        android:label="activity_journal"
+        tools:layout="@layout/activity_journal" />
     <fragment
         android:id="@+id/progressFragment"
         android:name="com.example.fitnessprogresstracker.ProgressFragment"
