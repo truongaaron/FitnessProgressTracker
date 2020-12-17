@@ -22,6 +22,9 @@ import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link HomeFragment#newInstance} factory method to
@@ -113,11 +116,8 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
                 inches = calcInches.getText().toString();
                 lbs = calcLbs.getText().toString();
                 if(validate()) {
-                    if(gender.equals("m")) {
-                        double bmr = Math.ceil(calculateBMRForMen(age, feet, inches, lbs)) * activityLevel;
-                        int bmrFinal = (int) bmr;
-                        Toast.makeText(getActivity(), "Maintain Weight: " + Integer.toString(bmrFinal) + " calories", Toast.LENGTH_SHORT).show();
-                    }
+                    calculateBMR(age, feet, inches, lbs);
+                    delayButtonPress(calculate);
                 }
 
             }
@@ -143,9 +143,22 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
         activityLevel = activityLevels[Integer.parseInt(activityStr)];
     }
 
-    public double calculateBMRForMen(String age, String feet, String inches, String lbs) {
+    public double calculateBMR(String age, String feet, String inches, String lbs) {
+        double bmr = 0;
+        int bmrFinal = 0;
+
         int ageInt = Integer.parseInt(age);
-        return (10*lbs_to_kg(lbs)) + (6.25*(ft_to_cm(feet) + in_to_cm(inches))) - (5 * ageInt) + 5;
+
+        if(gender.equals("m")) {
+            bmr = Math.ceil((10*lbs_to_kg(lbs)) + (6.25*(ft_to_cm(feet) + in_to_cm(inches))) - (5 * ageInt) + 5) * activityLevel;
+        } else {
+            bmr = Math.ceil((10*lbs_to_kg(lbs)) + (6.25*(ft_to_cm(feet) + in_to_cm(inches))) - (5 * ageInt) - 161) * activityLevel;
+        }
+        bmrFinal = (int) bmr;
+
+        Toast.makeText(getActivity(), "Maintain Weight: " + Integer.toString(bmrFinal) + " calories", Toast.LENGTH_SHORT).show();
+
+        return bmr;
     }
 
     public double ft_to_cm(String feet) {
@@ -179,6 +192,16 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
         }
 
         return result;
+    }
+
+    private void delayButtonPress(Button myButton) {
+        myButton.setEnabled(false);
+        myButton.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                myButton.setEnabled(true);
+            }
+        }, 2500);
     }
 
     @Override
