@@ -20,7 +20,11 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -32,12 +36,13 @@ import java.util.TimerTask;
  */
 public class HomeFragment extends Fragment implements AdapterView.OnItemSelectedListener {
 
-    private EditText calcAge, calcFeet, calcInches, calcLbs;
+    private TextInputLayout tcalcAge, tcalcFeet, tcalcInches, tcalcLbs;
     private RadioGroup maleFemale;
     private Spinner activity;
     private Button calculate;
-    String age, feet, inches, lbs, gender, activityStr;
-    double activityLevel;
+    private String age = "0", feet, inches, lbs, gender = "m", activityStr;
+    private double calcActivityLevel;
+    private TextView calcMaintainCal, calcMildCal, calcLosePoundCal, calcExtremeCal;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -90,10 +95,6 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
         spinner.setAdapter(adapter);
         spinner.setOnItemSelectedListener(this);
 
-
-
-        gender = "m";
-
         maleFemale.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
@@ -111,10 +112,10 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
         calculate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                age = calcAge.getText().toString();
-                feet = calcFeet.getText().toString();
-                inches = calcInches.getText().toString();
-                lbs = calcLbs.getText().toString();
+                age = (tcalcAge.getEditText().getText()).toString();
+                feet = (tcalcFeet.getEditText().getText()).toString();
+                inches = (tcalcInches.getEditText().getText()).toString();
+                lbs = (tcalcLbs.getEditText().getText()).toString();
                 if(validate()) {
                     calculateBMR(age, feet, inches, lbs);
                     delayButtonPress(calculate);
@@ -123,42 +124,50 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
             }
         });
 
-
         // Inflate the layout for this fragment
         return view;
     }
 
     public void setUpUIViews(View view) {
-        calcAge = (EditText) view.findViewById(R.id.etCalcAge);
-        calcFeet = (EditText) view.findViewById(R.id.etCalcFeet);
-        calcInches = (EditText) view.findViewById(R.id.etCalcInches);
-        calcLbs = (EditText) view.findViewById(R.id.etCalcLbs);
+        tcalcAge = (TextInputLayout) view.findViewById(R.id.tilAge);
+        tcalcFeet = (TextInputLayout) view.findViewById(R.id.tilFeet);
+        tcalcInches= (TextInputLayout) view.findViewById(R.id.tilInches);
+        tcalcLbs = (TextInputLayout) view.findViewById(R.id.tilWeight);
         maleFemale = (RadioGroup) view.findViewById(R.id.rgMaleFemale);
         activity = (Spinner) view.findViewById(R.id.spinnerActivity);
         calculate = (Button) view.findViewById(R.id.btnCalculate);
+        calcMaintainCal = (TextView) view.findViewById(R.id.tvMaintainCalories);
+        calcMildCal = (TextView) view.findViewById(R.id.tvMildCalories);
+        calcLosePoundCal = (TextView) view.findViewById(R.id.tvLosePoundCalories);
+        calcExtremeCal = (TextView) view.findViewById(R.id.tvExtremeCalories);
     }
 
     public void setActivityLevel(String activityStr) {
         double[] activityLevels = {1, 1.2, 1.375, 1.465, 1.55, 1.75, 1.9};
-        activityLevel = activityLevels[Integer.parseInt(activityStr)];
+        calcActivityLevel = activityLevels[Integer.parseInt(activityStr)];
     }
 
     public double calculateBMR(String age, String feet, String inches, String lbs) {
         double bmr = 0;
         int bmrFinal = 0;
-
         int ageInt = Integer.parseInt(age);
 
         if(gender.equals("m")) {
-            bmr = Math.ceil((10*lbs_to_kg(lbs)) + (6.25*(ft_to_cm(feet) + in_to_cm(inches))) - (5 * ageInt) + 5) * activityLevel;
+            bmr = Math.ceil((10*lbs_to_kg(lbs)) + (6.25*(ft_to_cm(feet) + in_to_cm(inches))) - (5 * ageInt) + 5) * calcActivityLevel;
         } else {
-            bmr = Math.ceil((10*lbs_to_kg(lbs)) + (6.25*(ft_to_cm(feet) + in_to_cm(inches))) - (5 * ageInt) - 161) * activityLevel;
+            bmr = Math.ceil((10*lbs_to_kg(lbs)) + (6.25*(ft_to_cm(feet) + in_to_cm(inches))) - (5 * ageInt) - 161) * calcActivityLevel;
         }
         bmrFinal = (int) bmr;
+        appendCalories(bmrFinal);
 
-        Toast.makeText(getActivity(), "Maintain Weight: " + Integer.toString(bmrFinal) + " calories", Toast.LENGTH_SHORT).show();
+        return bmrFinal;
+    }
 
-        return bmr;
+    public void appendCalories(int bmr) {
+        calcMaintainCal.setText("Maintain Weight: " + bmr + " calories/day");
+        calcMildCal.setText("Mild Weight Loss: " + (bmr - 300) + " calories/day");
+        calcLosePoundCal.setText("Weight Loss: " + (bmr - 500) + " calories/day");
+        calcExtremeCal.setText("Extreme Weight Loss: " + (int)(bmr - 1000) + " calories/day");
     }
 
     public double ft_to_cm(String feet) {
@@ -179,10 +188,10 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
     private Boolean validate() {
         Boolean result = false;
 
-        age = calcAge.getText().toString();
-        feet = calcFeet.getText().toString();
-        inches = calcInches.getText().toString();
-        lbs = calcLbs.getText().toString();
+        age = (tcalcAge.getEditText().getText()).toString();
+        feet = (tcalcFeet.getEditText().getText()).toString();
+        inches = (tcalcInches.getEditText().getText()).toString();
+        lbs = (tcalcLbs.getEditText().getText()).toString();
 
 
         if(age.isEmpty() || feet.isEmpty() || inches.isEmpty() || lbs.isEmpty()) {

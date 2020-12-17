@@ -5,12 +5,12 @@
     <string name="home_fragment">Home Fragment</string>
     <string name="home_activity">Home Activity</string>
     <string-array name="cactivity">
-        <item value="1">Basal Metabolic Rate (BMR)</item>
-        <item value="1.2">Sedentary: little or no exercise</item>
-        <item value="1.375">Light: exercise 1-3 times/week</item>
-        <item value="1.465">Moderate: exercise 4-5 times/week</item>
-        <item value="1.55">Active: daily exercise or intense exercise 3-4 times/week</item>
-        <item value="1.725">Very Active: intense exercise 6-7 times/week</item>
-        <item value="1.9">Extra Active: very intense exercise daily, or physical job</item>
+        <item value="1">No Exercise</item>
+        <item value="1.2">Minimal Exercise 1-2 days/week</item>
+        <item value="1.375">Light Exercise 3-4 days/week</item>
+        <item value="1.465">Moderate Exercise 3-5 days/week</item>
+        <item value="1.55">Daily Exercise 6-7 days/week</item>
+        <item value="1.725">Intense Daily Exercise 6-7 days/week</item>
+        <item value="1.9">Intense Job + Exercise 6-7 days/week</item>
     </string-array>
 </resources>
