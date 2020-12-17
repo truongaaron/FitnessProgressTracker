@@ -112,12 +112,14 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
                 feet = calcFeet.getText().toString();
                 inches = calcInches.getText().toString();
                 lbs = calcLbs.getText().toString();
-
-                if(gender.equals("m")) {
-                    double bmr = Math.ceil(calculateBMRForMen(age, feet, inches, lbs)) * activityLevel;
-                    int bmrFinal = (int)bmr;
-                    Toast.makeText(getActivity(), "Maintain Weight: " + Integer.toString(bmrFinal) + " calories", Toast.LENGTH_SHORT).show();
+                if(validate()) {
+                    if(gender.equals("m")) {
+                        double bmr = Math.ceil(calculateBMRForMen(age, feet, inches, lbs)) * activityLevel;
+                        int bmrFinal = (int) bmr;
+                        Toast.makeText(getActivity(), "Maintain Weight: " + Integer.toString(bmrFinal) + " calories", Toast.LENGTH_SHORT).show();
+                    }
                 }
+
             }
         });
 
@@ -159,6 +161,24 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
     public double lbs_to_kg(String lbs) {
         int lb = Integer.parseInt(lbs);
         return lb * 0.453592;
+    }
+
+    private Boolean validate() {
+        Boolean result = false;
+
+        age = calcAge.getText().toString();
+        feet = calcFeet.getText().toString();
+        inches = calcInches.getText().toString();
+        lbs = calcLbs.getText().toString();
+
+
+        if(age.isEmpty() || feet.isEmpty() || inches.isEmpty() || lbs.isEmpty()) {
+            Toast.makeText(getActivity(), "Please enter all the details", Toast.LENGTH_SHORT).show();
+        } else {
+            result = true;
+        }
+
+        return result;
     }
 
     @Override
