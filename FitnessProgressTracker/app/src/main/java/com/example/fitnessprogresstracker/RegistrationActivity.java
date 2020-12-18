@@ -32,6 +32,7 @@ import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 public class RegistrationActivity extends AppCompatActivity {
 
@@ -48,6 +49,7 @@ public class RegistrationActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == PICK_IMAGE && resultCode == RESULT_OK && data.getData() != null) {
             imagePath = data.getData();
             try {
@@ -57,8 +59,6 @@ public class RegistrationActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
-
-        super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override

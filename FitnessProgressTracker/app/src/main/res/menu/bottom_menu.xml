@@ -4,15 +4,17 @@
 
     <item
         android:id="@+id/homeFragment"
-        android:icon="@drawable/ic_home"
         android:checked="true"
+        android:icon="@drawable/ic_home"
         android:title="Home" />
     <item
         android:id="@+id/timerFragment"
+        android:checked="true"
         android:icon="@drawable/ic_timer"
         android:title="Timer" />
     <item
         android:id="@+id/journalActivity"
+        android:checked="true"
         android:icon="@drawable/ic_journal"
         android:title="Journal" />
     <item
@@ -22,6 +24,7 @@
         android:title="Progress" />
     <item
         android:id="@+id/profileFragment"
+        android:checked="true"
         android:icon="@drawable/ic_profile"
         android:title="Profile" />
 </menu>
