@@ -193,7 +193,6 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
         inches = (tcalcInches.getEditText().getText()).toString();
         lbs = (tcalcLbs.getEditText().getText()).toString();
 
-
         if(age.isEmpty() || feet.isEmpty() || inches.isEmpty() || lbs.isEmpty()) {
             Toast.makeText(getActivity(), "Please enter all the details", Toast.LENGTH_SHORT).show();
         } else {
