@@ -10,37 +10,34 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> {
+public class ProgressFoodListAdapter extends RecyclerView.Adapter<ProgressFoodListAdapter.MyViewHolder> {
 
-    String names[], posts[];
-    int images[];
+    String foodNames[], calories[];
     Context context;
 
-    public PostAdapter(Context ct, String s1[], String s2[], int imgs[]) {
+    public ProgressFoodListAdapter(Context ct, String s1[], String s2[]) {
         context = ct;
-        names = s1;
-        posts = s2;
-        images = imgs;
+        foodNames = s1;
+        calories = s2;
     }
 
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(context);
-        View view = inflater.inflate(R.layout.post_row, parent, false);
+        View view = inflater.inflate(R.layout.progress_food_row, parent, false);
         return new MyViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        holder.name.setText(names[position]);
-        holder.postContent.setText(posts[position]);
-        // holder.profilePic.setImageResource(images[position]);
+        holder.name.setText(foodNames[position]);
+        holder.postContent.setText(calories[position]);
     }
 
     @Override
     public int getItemCount() {
-        return names.length;
+        return foodNames.length;
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {

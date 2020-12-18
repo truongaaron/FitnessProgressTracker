@@ -29,4 +29,20 @@
         <item>This is post 4.</item>
         <item>This is post 5.</item>
     </string-array>
+
+    <string-array name = "food_list">
+        <item>3 Chicken Nuggets</item>
+        <item>Double Cheeseburger</item>
+        <item>Big Mac Sandwich</item>
+        <item>Large Chocolate Milkshake</item>
+        <item>Celery Stick</item>
+    </string-array>
+
+    <string-array name = "calorie_counts">
+        <item>100 calories</item>
+        <item>300 calories</item>
+        <item>600 calories</item>
+        <item>1000 calories</item>
+        <item>1 calories</item>
+    </string-array>
 </resources>

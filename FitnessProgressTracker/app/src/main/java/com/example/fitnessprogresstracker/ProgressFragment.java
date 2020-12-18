@@ -15,6 +15,9 @@ import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputLayout;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link ProgressFragment#newInstance} factory method to
@@ -26,7 +29,14 @@ public class ProgressFragment extends Fragment {
     private TextInputLayout foodInput, calorieInput;
     private Button submitFood;
     private RecyclerView foodList;
+    private List<String> lfoodNames = new ArrayList<>(), lcalCounts = new ArrayList<>();;
     private String foodInputStr, calInputStr, calRemStr;
+
+    private String foodNames[], calCounts[];
+
+    // Convert List to Array
+//    foodNames = new String[lfoodNames.size()];
+//    foodNames = lfoodNames.toArray(foodNames);
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -81,7 +91,16 @@ public class ProgressFragment extends Fragment {
         submitFood.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                foodInputStr = (foodInput.getEditText().getText()).toString();
+                calInputStr = (calorieInput.getEditText().getText()).toString();
+
                 if(validate()) {
+                    convertListsToArr();
+                    
+                    ProgressFoodListAdapter progAdapter = new ProgressFoodListAdapter(getActivity(), foodNames, calCounts);
+                    foodList.setAdapter(progAdapter);
+                    foodList.setLayoutManager(new LinearLayoutManager(getActivity()));
+
                     caloriesRemaining.setText(Integer.toString(subtractRemainingCalories()));
                     foodInput.getEditText().setText("");
                     calorieInput.getEditText().setText("");
@@ -89,13 +108,19 @@ public class ProgressFragment extends Fragment {
             }
         });
 
-//        userNames = getResources().getStringArray(R.array.user_names);
-//        postsArr = getResources().getStringArray(R.array.post_content);
-//
-//        PostAdapter postAdapter = new PostAdapter(getActivity(), userNames, postsArr, images);
-//        rvPosts.setAdapter(postAdapter);
-//        rvPosts.setLayoutManager(new LinearLayoutManager(getActivity()));
+
         return view;
+    }
+
+    private void convertListsToArr() {
+        lfoodNames.add(foodInputStr);
+        lcalCounts.add(calInputStr + " calories");
+
+        foodNames = new String[lfoodNames.size()];
+        foodNames = lfoodNames.toArray(foodNames);
+
+        calCounts = new String[lcalCounts.size()];
+        calCounts = lcalCounts.toArray(calCounts);
     }
 
     private int subtractRemainingCalories() {
