@@ -3,10 +3,17 @@ package com.example.fitnessprogresstracker;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.android.material.textfield.TextInputLayout;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -14,6 +21,12 @@ import android.view.ViewGroup;
  * create an instance of this fragment.
  */
 public class ProgressFragment extends Fragment {
+
+    private TextView caloriesRemaining;
+    private TextInputLayout foodInput, calorieInput;
+    private Button submitFood;
+    private RecyclerView foodList;
+    private String foodInputStr, calInputStr, calRemStr;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -56,9 +69,56 @@ public class ProgressFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_progress, container, false);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_progress, container, false);
+
+        caloriesRemaining = view.findViewById(R.id.tvCalRemaining);
+        foodInput = view.findViewById(R.id.tilFoodInput);
+        calorieInput = view.findViewById(R.id.tilCaloriesInput);
+        foodList = view.findViewById(R.id.rvFoodList);
+        submitFood = view.findViewById(R.id.btnAddFood);
+
+        submitFood.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(validate()) {
+                    caloriesRemaining.setText(Integer.toString(subtractRemainingCalories()));
+                    foodInput.getEditText().setText("");
+                    calorieInput.getEditText().setText("");
+                }
+            }
+        });
+
+//        userNames = getResources().getStringArray(R.array.user_names);
+//        postsArr = getResources().getStringArray(R.array.post_content);
+//
+//        PostAdapter postAdapter = new PostAdapter(getActivity(), userNames, postsArr, images);
+//        rvPosts.setAdapter(postAdapter);
+//        rvPosts.setLayoutManager(new LinearLayoutManager(getActivity()));
+        return view;
+    }
+
+    private int subtractRemainingCalories() {
+        calInputStr = (calorieInput.getEditText().getText()).toString();
+        calRemStr = caloriesRemaining.getText().toString();
+        int cal = Integer.parseInt(calInputStr);
+        int calRem = Integer.parseInt(calRemStr);
+
+        return calRem - cal;
+    }
+
+    private Boolean validate() {
+        Boolean result = false;
+
+        foodInputStr = (foodInput.getEditText().getText()).toString();
+        calInputStr = (calorieInput.getEditText().getText()).toString();
+
+        if(foodInputStr.isEmpty() || calInputStr.isEmpty()) {
+            Toast.makeText(getActivity(), "Please enter all the details", Toast.LENGTH_SHORT).show();
+        } else {
+            result = true;
+        }
+
+        return result;
     }
 }

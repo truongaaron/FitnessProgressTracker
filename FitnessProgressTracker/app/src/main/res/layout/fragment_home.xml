@@ -48,8 +48,8 @@
 
     <Spinner
         android:id="@+id/spinnerActivity"
-        android:layout_width="233dp"
-        android:layout_height="65dp"
+        android:layout_width="260dp"
+        android:layout_height="64dp"
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
         android:elevation="2dp"
@@ -196,7 +196,7 @@
 
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/tilWeight"
+        android:id="@+id/tilFoodInput"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -261,7 +261,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tilWeight"
+        app:layout_constraintTop_toBottomOf="@+id/tilFoodInput"
         app:layout_constraintVertical_bias="0.060000002">
 
         <com.google.android.material.textfield.TextInputEditText

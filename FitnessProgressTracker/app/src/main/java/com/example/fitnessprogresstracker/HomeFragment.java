@@ -1,33 +1,21 @@
 package com.example.fitnessprogresstracker;
 
-import android.graphics.Bitmap;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
-
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -132,7 +120,7 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
         tcalcAge = (TextInputLayout) view.findViewById(R.id.tilAge);
         tcalcFeet = (TextInputLayout) view.findViewById(R.id.tilFeet);
         tcalcInches= (TextInputLayout) view.findViewById(R.id.tilInches);
-        tcalcLbs = (TextInputLayout) view.findViewById(R.id.tilWeight);
+        tcalcLbs = (TextInputLayout) view.findViewById(R.id.tilFoodInput);
         maleFemale = (RadioGroup) view.findViewById(R.id.rgMaleFemale);
         activity = (Spinner) view.findViewById(R.id.spinnerActivity);
         calculate = (Button) view.findViewById(R.id.btnCalculate);
