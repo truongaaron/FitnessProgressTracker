@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,6 +27,9 @@ public class ProgressFoodListAdapter extends RecyclerView.Adapter<ProgressFoodLi
     Context context;
     RecyclerView.ViewHolder viewHolder;
 
+    private TextView caloriesRemaining;
+    private String calRemStr;
+
     public ProgressFoodListAdapter(Context ct, List<String> s1, List<String> s2, List<ImageView> images) {
         context = ct;
         lfoodNames = s1;
@@ -38,6 +42,9 @@ public class ProgressFoodListAdapter extends RecyclerView.Adapter<ProgressFoodLi
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(context);
         View view = inflater.inflate(R.layout.progress_food_row, parent, false);
+
+
+
         viewHolder = new MyViewHolder(view);
         return new MyViewHolder(view);
     }
@@ -51,11 +58,18 @@ public class ProgressFoodListAdapter extends RecyclerView.Adapter<ProgressFoodLi
         holder.delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(deleteButtons.size()!=0){
+                if(deleteButtons.size() != 0){
+
+                    Log.d("POSSSSS: ", deleteButtons.toString());
+
+                    int cal = Integer.parseInt(lcalories.get(position).split(" ")[0]);
+                    pf.revertRemainingCalories(cal);
+
                     deleteButtons.remove(position);
                     lfoodNames.remove(position);
                     lcalories.remove(position);
                     notifyItemRemoved(position);
+                    notifyItemRangeChanged(position, lfoodNames.size());
                 }
             }
         });
@@ -83,10 +97,5 @@ public class ProgressFoodListAdapter extends RecyclerView.Adapter<ProgressFoodLi
             calorie = itemView.findViewById(R.id.tvFoodListCalories);
             delete = itemView.findViewById(R.id.ivFoodListDelete);
         }
-    }
-
-    public void swapItems(List<ImageView> list){
-        this.deleteButtons = list;
-        notifyDataSetChanged();
     }
 }

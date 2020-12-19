@@ -32,7 +32,7 @@ import java.util.List;
  */
 public class ProgressFragment extends Fragment {
 
-    private TextView caloriesRemaining;
+    private static TextView caloriesRemaining;
     private TextInputLayout foodInput, calorieInput;
     private ImageView deleteFood;
     private Button submitFood;
@@ -112,24 +112,15 @@ public class ProgressFragment extends Fragment {
                     caloriesRemaining.setText(Integer.toString(subtractRemainingCalories()));
                     foodInput.getEditText().setText("");
                     calorieInput.getEditText().setText("");
+
                 }
+                delayButtonPress(submitFood);
             }
         });
-
-
-
 
         return view;
     }
 
-    private void setUpRecyclerView() {
-        foodList.setAdapter(progAdapter);
-        foodList.setLayoutManager(new LinearLayoutManager(getActivity()));
-        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SwipeToDeleteCallback(progAdapter));
-        itemTouchHelper.attachToRecyclerView(foodList);
-        progAdapter.notifyDataSetChanged();
-
-    }
 
     private void addItemsToList() {
         lfoodNames.add(foodInputStr);
@@ -146,6 +137,23 @@ public class ProgressFragment extends Fragment {
         return calRem - cal;
     }
 
+    public void revertRemainingCalories(int deletedCalories) {
+        calRemStr = caloriesRemaining.getText().toString();
+        int calRem = Integer.parseInt(calRemStr);
+
+        caloriesRemaining.setText(Integer.toString(calRem + deletedCalories));
+    }
+
+    private void delayButtonPress(Button myButton) {
+        myButton.setEnabled(false);
+        myButton.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                myButton.setEnabled(true);
+            }
+        }, 1000);
+    }
+
     private Boolean validate() {
         Boolean result = false;
 
@@ -160,8 +168,5 @@ public class ProgressFragment extends Fragment {
 
         return result;
     }
-
-
-
 
 }
