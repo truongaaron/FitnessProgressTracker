@@ -29,6 +29,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
+import java.io.File;
 import java.io.IOException;
 
 public class UpdateProfile extends AppCompatActivity {
@@ -46,6 +47,7 @@ public class UpdateProfile extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if(requestCode == PICK_IMAGE && resultCode == RESULT_OK && data.getData() != null) {
             imagePath = data.getData();
+            Toast.makeText(UpdateProfile.this, imagePath.toString(), Toast.LENGTH_SHORT).show();
             try {
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imagePath);
                 updateProfilePic.setImageBitmap(bitmap);

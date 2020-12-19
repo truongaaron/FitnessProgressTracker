@@ -121,6 +121,8 @@
             tools:layout_editor_absoluteY="105dp" />
     </com.google.android.material.textfield.TextInputLayout>
 
+
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvFoodList"
         android:layout_width="0dp"
@@ -133,4 +135,5 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btnAddFood"
         app:layout_constraintVertical_bias="0.0" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

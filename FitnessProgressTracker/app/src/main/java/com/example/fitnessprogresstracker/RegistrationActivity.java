@@ -75,7 +75,6 @@ public class RegistrationActivity extends AppCompatActivity {
             @Override
             public void onSuccess(Uri uri) {
                 imagePath = uri;
-                Log.d("URL2", uri.toString());
                 Picasso.get().load(uri).fit().centerCrop().into(userProfilePic);
             }
         });

@@ -50,7 +50,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
-            name = itemView.findViewById(R.id.tvFoodListCalories);
+            name = itemView.findViewById(R.id.tvFoodListName);
             postContent = itemView.findViewById(R.id.tvFoodListName);
             profilePic = itemView.findViewById(R.id.ivFeedProfilePicture);
         }
