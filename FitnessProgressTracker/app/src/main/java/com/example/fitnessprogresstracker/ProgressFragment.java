@@ -9,10 +9,14 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,9 +34,11 @@ public class ProgressFragment extends Fragment {
 
     private TextView caloriesRemaining;
     private TextInputLayout foodInput, calorieInput;
+    private ImageView deleteFood;
     private Button submitFood;
     private RecyclerView foodList;
-    private List<String> lfoodNames = new ArrayList<>(), lcalCounts = new ArrayList<>();;
+    private List<String> lfoodNames = new ArrayList<>(), lcalCounts = new ArrayList<>();
+    private List<ImageView> ldelButtons = new ArrayList<>();
     private String foodInputStr, calInputStr, calRemStr;
     private ProgressFoodListAdapter progAdapter;
 
@@ -85,8 +91,9 @@ public class ProgressFragment extends Fragment {
         calorieInput = view.findViewById(R.id.tilCaloriesInput);
         foodList = view.findViewById(R.id.rvFoodList);
         submitFood = view.findViewById(R.id.btnAddFood);
+        deleteFood = view.findViewById(R.id.ivFoodListDelete);
 
-        progAdapter = new ProgressFoodListAdapter(getActivity(), lfoodNames, lcalCounts);
+        progAdapter = new ProgressFoodListAdapter(getActivity(), lfoodNames, lcalCounts, ldelButtons);
 
         submitFood.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -95,13 +102,12 @@ public class ProgressFragment extends Fragment {
                 calInputStr = (calorieInput.getEditText().getText()).toString();
 
                 if(validate()) {
-                    convertListsToArr();
+                    addItemsToList();
                     
-                    progAdapter = new ProgressFoodListAdapter(getActivity(), lfoodNames, lcalCounts);
+                    progAdapter = new ProgressFoodListAdapter(getActivity(), lfoodNames, lcalCounts, ldelButtons);
 
-                    setUpRecyclerView();
-
-
+                    foodList.setAdapter(progAdapter);
+                    foodList.setLayoutManager(new LinearLayoutManager(getActivity()));
 
                     caloriesRemaining.setText(Integer.toString(subtractRemainingCalories()));
                     foodInput.getEditText().setText("");
@@ -109,6 +115,8 @@ public class ProgressFragment extends Fragment {
                 }
             }
         });
+
+
 
 
         return view;
@@ -120,13 +128,13 @@ public class ProgressFragment extends Fragment {
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SwipeToDeleteCallback(progAdapter));
         itemTouchHelper.attachToRecyclerView(foodList);
         progAdapter.notifyDataSetChanged();
-        foodList.setAdapter(progAdapter);
-        foodList.setLayoutManager(new LinearLayoutManager(getActivity()));
+
     }
 
-    private void convertListsToArr() {
+    private void addItemsToList() {
         lfoodNames.add(foodInputStr);
         lcalCounts.add(calInputStr + " calories");
+        ldelButtons.add(deleteFood);
     }
 
     private int subtractRemainingCalories() {
@@ -152,6 +160,8 @@ public class ProgressFragment extends Fragment {
 
         return result;
     }
+
+
 
 
 }
