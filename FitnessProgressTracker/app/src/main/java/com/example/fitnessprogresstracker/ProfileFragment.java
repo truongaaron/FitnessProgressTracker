@@ -36,7 +36,7 @@ public class ProfileFragment extends Fragment {
 
     private ImageView profilePic;
     private TextView profileName, profileAge, profileEmail;
-    private Button profileUpdate, changePassword;
+    private Button profileUpdate, changePassword, signOut;
     private FirebaseAuth firebaseAuth;
     private FirebaseDatabase firebaseDatabase;
     private FirebaseStorage firebaseStorage;
@@ -91,6 +91,7 @@ public class ProfileFragment extends Fragment {
         profileEmail = (TextView) view.findViewById(R.id.tvProfileEmail);
         profileUpdate = (Button) view.findViewById(R.id.btnProfileUpdate);
         changePassword = (Button) view.findViewById(R.id.btnChangePassword);
+        signOut = (Button) view.findViewById(R.id.btnSignOut);
 
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseDatabase = FirebaseDatabase.getInstance();
@@ -136,6 +137,19 @@ public class ProfileFragment extends Fragment {
             }
         });
 
+        signOut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Logout();
+            }
+        });
+
         return view;
+    }
+
+    private void Logout() {
+        firebaseAuth.signOut();
+        getActivity().getSupportFragmentManager().popBackStack();
+        startActivity(new Intent(getActivity(), MainActivity.class));
     }
 }

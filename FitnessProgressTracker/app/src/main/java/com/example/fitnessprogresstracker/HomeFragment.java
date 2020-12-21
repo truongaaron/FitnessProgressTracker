@@ -1,5 +1,6 @@
 package com.example.fitnessprogresstracker;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -21,6 +22,9 @@ import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputLayout;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link HomeFragment#newInstance} factory method to
@@ -36,6 +40,7 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
     private double calcActivityLevel;
     private TextView calcMaintainCal, calcMildCal, calcLosePoundCal, calcExtremeCal;
     private EditText inchesChild;
+    private static List<String> calorieResults = new ArrayList<String>();
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -129,6 +134,7 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
                 if(validate()) {
                     calculateBMR(age, feet, inches, lbs);
                     delayButtonPress(calculate);
+                    startActivity(new Intent(getActivity(), CalorieResultsActivity.class));
                 }
 
             }
@@ -169,16 +175,16 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
             bmr = Math.ceil((10*lbs_to_kg(lbs)) + (6.25*(ft_to_cm(feet) + in_to_cm(inches))) - (5 * ageInt) - 161) * calcActivityLevel;
         }
         bmrFinal = (int) bmr;
-        appendCalories(bmrFinal);
+
+        calorieResults.add(Integer.toString(bmrFinal) + " calories/day");
+        calorieResults.add(Integer.toString(bmrFinal - 300) + " calories/day");
+        calorieResults.add(Integer.toString(bmrFinal - 500) + " calories/day");
+        calorieResults.add(Integer.toString(bmrFinal - 1000) + " calories/day");
 
         return bmrFinal;
     }
-
-    public void appendCalories(int bmr) {
-        calcMaintainCal.setText("Maintain Weight: " + bmr + " calories/day");
-        calcMildCal.setText("Mild Weight Loss: " + (bmr - 300) + " calories/day");
-        calcLosePoundCal.setText("Weight Loss: " + (bmr - 500) + " calories/day");
-        calcExtremeCal.setText("Extreme Weight Loss: " + (int)(bmr - 1000) + " calories/day");
+    public List<String> getCalorieResults() {
+        return calorieResults;
     }
 
     public double ft_to_cm(String feet) {

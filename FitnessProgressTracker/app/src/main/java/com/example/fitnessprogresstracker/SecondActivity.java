@@ -18,14 +18,10 @@ import com.google.firebase.auth.FirebaseAuth;
 
 public class SecondActivity extends AppCompatActivity {
 
-    private FirebaseAuth firebaseAuth;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_second);
-
-        firebaseAuth = FirebaseAuth.getInstance();
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigationView);
         NavController navController = Navigation.findNavController(this, R.id.fragment);
@@ -33,30 +29,26 @@ public class SecondActivity extends AppCompatActivity {
         NavigationUI.setupWithNavController(bottomNavigationView, navController);
     }
 
-    private void Logout() {
-        firebaseAuth.signOut();
-        finish();
-        startActivity(new Intent(SecondActivity.this, MainActivity.class));
-    }
+//    private void Logout() {
+//        firebaseAuth.signOut();
+//        finish();
+//        startActivity(new Intent(SecondActivity.this, MainActivity.class));
+//    }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch(item.getItemId()) {
-            case R.id.logoutMenu: {
-                Logout();
-                break;
-            }
-//            case R.id.profileMenu: {
-//                startActivity(new Intent(SecondActivity.this, ProfileActivity.class));
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        getMenuInflater().inflate(R.menu.menu, menu);
+//        return true;
+//    }
+//
+//    @Override
+//    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+//        switch(item.getItemId()) {
+//            case R.id.logoutMenu: {
+//                Logout();
 //                break;
 //            }
-        }
-        return super.onOptionsItemSelected(item);
-    }
+//        }
+//        return super.onOptionsItemSelected(item);
+//    }
 }
