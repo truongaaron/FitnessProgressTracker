@@ -2,19 +2,13 @@ package com.example.fitnessprogresstracker;
 
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -87,7 +81,7 @@ public class ProgressFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_progress, container, false);
 
         caloriesRemaining = view.findViewById(R.id.tvCalRemaining);
-        foodInput = view.findViewById(R.id.tilFoodInput);
+        foodInput = view.findViewById(R.id.tilWeight);
         calorieInput = view.findViewById(R.id.tilCaloriesInput);
         foodList = view.findViewById(R.id.rvFoodList);
         submitFood = view.findViewById(R.id.btnAddFood);

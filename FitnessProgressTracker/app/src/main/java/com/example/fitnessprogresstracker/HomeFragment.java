@@ -4,12 +4,16 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.text.Editable;
+import android.text.InputFilter;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -31,6 +35,7 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
     private String age = "0", feet, inches, lbs, gender = "m", activityStr;
     private double calcActivityLevel;
     private TextView calcMaintainCal, calcMildCal, calcLosePoundCal, calcExtremeCal;
+    private EditText inchesChild;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -97,6 +102,23 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
             }
         });
 
+        inchesChild.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                inchesChild.setFilters(new InputFilter[]{new InputFilterMinMax(0, 11)});
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
         calculate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -120,7 +142,7 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
         tcalcAge = (TextInputLayout) view.findViewById(R.id.tilAge);
         tcalcFeet = (TextInputLayout) view.findViewById(R.id.tilFeet);
         tcalcInches= (TextInputLayout) view.findViewById(R.id.tilInches);
-        tcalcLbs = (TextInputLayout) view.findViewById(R.id.tilFoodInput);
+        tcalcLbs = (TextInputLayout) view.findViewById(R.id.tilWeight);
         maleFemale = (RadioGroup) view.findViewById(R.id.rgMaleFemale);
         activity = (Spinner) view.findViewById(R.id.spinnerActivity);
         calculate = (Button) view.findViewById(R.id.btnCalculate);
@@ -128,6 +150,7 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
         calcMildCal = (TextView) view.findViewById(R.id.tvMildCalories);
         calcLosePoundCal = (TextView) view.findViewById(R.id.tvLosePoundCalories);
         calcExtremeCal = (TextView) view.findViewById(R.id.tvExtremeCalories);
+        inchesChild = (EditText) view.findViewById(R.id.tilInchesChild);
     }
 
     public void setActivityLevel(String activityStr) {

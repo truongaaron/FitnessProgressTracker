@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#F5F5F5"
     tools:context=".ProgressFragment">
 
     <TextView
@@ -64,11 +65,11 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tilFoodInput"
+        app:layout_constraintTop_toBottomOf="@+id/tilWeight"
         app:layout_constraintVertical_bias="0.0" />
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/tilFoodInput"
+        android:id="@+id/tilWeight"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -91,7 +92,8 @@
             android:inputType="text"
             android:maxLength="20"
             tools:layout_editor_absoluteX="20dp"
-            tools:layout_editor_absoluteY="105dp" />
+            tools:layout_editor_absoluteY="105dp"
+            android:imeOptions="actionDone" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
@@ -108,7 +110,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toEndOf="@+id/tilFoodInput"
+        app:layout_constraintStart_toEndOf="@+id/tilWeight"
         app:layout_constraintTop_toBottomOf="@+id/tvCalRemaining"
         app:layout_constraintVertical_bias="0.0">
 
@@ -118,9 +120,9 @@
             android:inputType="number"
             android:maxLength="4"
             tools:layout_editor_absoluteX="260dp"
-            tools:layout_editor_absoluteY="105dp" />
+            tools:layout_editor_absoluteY="105dp"
+            android:imeOptions="actionDone" />
     </com.google.android.material.textfield.TextInputLayout>
-
 
 
     <androidx.recyclerview.widget.RecyclerView
@@ -129,6 +131,7 @@
         android:layout_height="0dp"
         android:layout_marginTop="30dp"
         android:layout_marginBottom="50dp"
+        android:background="#FFFFFF"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"

@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -70,6 +71,7 @@ public class ProgressFoodListAdapter extends RecyclerView.Adapter<ProgressFoodLi
                     lcalories.remove(position);
                     notifyItemRemoved(position);
                     notifyItemRangeChanged(position, lfoodNames.size());
+                    delayButtonPress(holder.delete);
                 }
             }
         });
@@ -83,6 +85,16 @@ public class ProgressFoodListAdapter extends RecyclerView.Adapter<ProgressFoodLi
 
     public Context getContext() {
         return context;
+    }
+
+    private void delayButtonPress(ImageView myButton) {
+        myButton.setEnabled(false);
+        myButton.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                myButton.setEnabled(true);
+            }
+        }, 1000);
     }
     
 
