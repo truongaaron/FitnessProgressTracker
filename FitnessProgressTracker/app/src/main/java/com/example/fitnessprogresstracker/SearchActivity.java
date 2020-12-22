@@ -7,6 +7,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -67,11 +69,29 @@ public class SearchActivity extends AppCompatActivity {
                 firebaseRecyclerAdapter.startListening();
             }
         });
+
+        searchField.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                String searchText = searchField.getText().toString();
+
+                firebaseUserSearch(searchText);
+                firebaseRecyclerAdapter.startListening();
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
     }
 
     private void firebaseUserSearch(String searchText) {
-        Toast.makeText(SearchActivity.this, "Searching..", Toast.LENGTH_LONG).show();
-
         Query query = databaseReference.orderByChild("name").startAt(searchText).endAt(searchText + "\uf8ff");
 
         usersList.setLayoutManager(new LinearLayoutManager(this));
@@ -82,7 +102,6 @@ public class SearchActivity extends AppCompatActivity {
             @Override
             protected void onBindViewHolder(@NonNull UsersViewHolder holder, int position, @NonNull UserSearch model) {
                 holder.name.setText(model.getName());
-                Toast.makeText(SearchActivity.this, model.getName(), Toast.LENGTH_LONG).show();
 
                 StorageReference storageReference = firebaseStorage.getReference();
                 storageReference.child(model.getImage()).child("Images/Profile Pic").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
@@ -103,12 +122,6 @@ public class SearchActivity extends AppCompatActivity {
         };
         firebaseRecyclerAdapter.startListening();
         usersList.setAdapter(firebaseRecyclerAdapter);
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        firebaseRecyclerAdapter.stopListening();
     }
 
 
@@ -132,6 +145,7 @@ public class SearchActivity extends AppCompatActivity {
 
         switch(item.getItemId()) {
             case android.R.id.home:
+                // firebaseRecyclerAdapter.stopListening();
                 onBackPressed();
         }
         return super.onOptionsItemSelected(item);
