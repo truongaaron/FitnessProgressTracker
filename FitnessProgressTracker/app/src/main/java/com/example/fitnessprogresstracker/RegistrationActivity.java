@@ -186,7 +186,7 @@ public class RegistrationActivity extends AppCompatActivity {
             }
         });
 
-        DatabaseReference users = firebaseDatabase.getReference("Users");
+        DatabaseReference users = firebaseDatabase.getReference("Users").child(firebaseAuth.getUid());
 
         UserSearch userSearch = new UserSearch(name, firebaseAuth.getUid());
         users.setValue(userSearch);

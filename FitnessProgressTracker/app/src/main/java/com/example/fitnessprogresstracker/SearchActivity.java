@@ -74,7 +74,6 @@ public class SearchActivity extends AppCompatActivity {
 
         Query query = databaseReference.orderByChild("name").startAt(searchText).endAt(searchText + "\uf8ff");
 
-        usersList.hasFixedSize();
         usersList.setLayoutManager(new LinearLayoutManager(this));
 
         FirebaseRecyclerOptions<UserSearch> options = new FirebaseRecyclerOptions.Builder<UserSearch>().setQuery(query, UserSearch.class).build();
@@ -83,6 +82,7 @@ public class SearchActivity extends AppCompatActivity {
             @Override
             protected void onBindViewHolder(@NonNull UsersViewHolder holder, int position, @NonNull UserSearch model) {
                 holder.name.setText(model.getName());
+                Toast.makeText(SearchActivity.this, model.getName(), Toast.LENGTH_LONG).show();
 
                 StorageReference storageReference = firebaseStorage.getReference();
                 storageReference.child(model.getImage()).child("Images/Profile Pic").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
