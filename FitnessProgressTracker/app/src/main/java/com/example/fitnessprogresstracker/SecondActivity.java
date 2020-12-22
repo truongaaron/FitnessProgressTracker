@@ -29,26 +29,20 @@ public class SecondActivity extends AppCompatActivity {
         NavigationUI.setupWithNavController(bottomNavigationView, navController);
     }
 
-//    private void Logout() {
-//        firebaseAuth.signOut();
-//        finish();
-//        startActivity(new Intent(SecondActivity.this, MainActivity.class));
-//    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return true;
+    }
 
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        getMenuInflater().inflate(R.menu.menu, menu);
-//        return true;
-//    }
-//
-//    @Override
-//    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-//        switch(item.getItemId()) {
-//            case R.id.logoutMenu: {
-//                Logout();
-//                break;
-//            }
-//        }
-//        return super.onOptionsItemSelected(item);
-//    }
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch(item.getItemId()) {
+            case R.id.searchMenu: {
+                startActivity(new Intent(SecondActivity.this, SearchActivity.class));
+                break;
+            }
+        }
+        return super.onOptionsItemSelected(item);
+    }
 }

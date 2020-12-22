@@ -176,10 +176,10 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
         }
         bmrFinal = (int) bmr;
 
-        calorieResults.add(Integer.toString(bmrFinal) + " calories/day");
-        calorieResults.add(Integer.toString(bmrFinal - 300) + " calories/day");
-        calorieResults.add(Integer.toString(bmrFinal - 500) + " calories/day");
-        calorieResults.add(Integer.toString(bmrFinal - 1000) + " calories/day");
+        calorieResults.add(Integer.toString(bmrFinal) + " calories/day to");
+        calorieResults.add(Integer.toString(bmrFinal - 300) + " calories/day to");
+        calorieResults.add(Integer.toString(bmrFinal - 500) + " calories/day to");
+        calorieResults.add(Integer.toString(bmrFinal - 1000) + " calories/day to");
 
         return bmrFinal;
     }

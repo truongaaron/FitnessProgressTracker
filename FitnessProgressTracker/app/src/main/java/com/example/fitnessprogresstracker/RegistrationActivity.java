@@ -185,6 +185,13 @@ public class RegistrationActivity extends AppCompatActivity {
                 Toast.makeText(RegistrationActivity.this, "Profile Picture Successfully Updated.", Toast.LENGTH_SHORT).show();
             }
         });
+
+        DatabaseReference users = firebaseDatabase.getReference("Users");
+
+        UserSearch userSearch = new UserSearch(name, firebaseAuth.getUid());
+        users.setValue(userSearch);
+
+
         UserProfile userProfile = new UserProfile(age, email, name);
         myRef.setValue(userProfile);
     }
