@@ -34,7 +34,7 @@ import java.io.IOException;
 
 public class UpdateProfile extends AppCompatActivity {
 
-    private EditText newUserName, newUserEmail, newUserAge;
+    private EditText newUserName, newUserEmail, newUserAge, newUserCalories;
     private Button save;
     private FirebaseAuth firebaseAuth;
     private FirebaseDatabase firebaseDatabase;
@@ -67,6 +67,7 @@ public class UpdateProfile extends AppCompatActivity {
         newUserName = (EditText) findViewById(R.id.etNameUpdate);
         newUserEmail = (EditText) findViewById(R.id.etEmailUpdate);
         newUserAge = (EditText) findViewById(R.id.etAgeUpdate);
+        newUserCalories = (EditText) findViewById(R.id.etCaloriesUpdate);
         save = (Button) findViewById(R.id.btnSave);
         updateProfilePic = (ImageView) findViewById(R.id.ivProfileUpdate);
 
@@ -85,6 +86,7 @@ public class UpdateProfile extends AppCompatActivity {
                 newUserName.setText(userProfile.getUserName());
                 newUserAge.setText(userProfile.getUserAge());
                 newUserEmail.setText(userProfile.getUserEmail());
+                newUserCalories.setText(userProfile.getUserCalories());
             }
 
             @Override
@@ -107,8 +109,9 @@ public class UpdateProfile extends AppCompatActivity {
                 String name = newUserName.getText().toString();
                 String age = newUserAge.getText().toString();
                 String email = newUserEmail.getText().toString();
+                String calories = newUserCalories.getText().toString();
 
-                UserProfile userProfile = new UserProfile(age, email, name);
+                UserProfile userProfile = new UserProfile(age, email, name, calories);
 
                 databaseReference.setValue(userProfile);
 

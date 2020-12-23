@@ -61,6 +61,20 @@
         app:layout_constraintTop_toBottomOf="@+id/etEmailUpdate"
         app:layout_constraintVertical_bias="0.062" />
 
+    <EditText
+        android:id="@+id/etCaloriesUpdate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="Calories"
+        android:inputType="number"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/etAgeUpdate"
+        app:layout_constraintVertical_bias="0.062" />
+
     <Button
         android:id="@+id/btnSave"
         android:layout_width="wrap_content"
@@ -70,6 +84,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/etAgeUpdate"
+        app:layout_constraintTop_toBottomOf="@+id/etCaloriesUpdate"
         app:layout_constraintVertical_bias="0.122" />
 </androidx.constraintlayout.widget.ConstraintLayout>

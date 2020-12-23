@@ -38,7 +38,6 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
     private Button calculate;
     private String age = "0", feet, inches, lbs, gender = "m", activityStr;
     private double calcActivityLevel;
-    private TextView calcMaintainCal, calcMildCal, calcLosePoundCal, calcExtremeCal;
     private EditText inchesChild;
     private static List<String> calorieResults = new ArrayList<String>();
 
@@ -152,10 +151,6 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
         maleFemale = (RadioGroup) view.findViewById(R.id.rgMaleFemale);
         activity = (Spinner) view.findViewById(R.id.spinnerActivity);
         calculate = (Button) view.findViewById(R.id.btnCalculate);
-        calcMaintainCal = (TextView) view.findViewById(R.id.tvMaintainCalories);
-        calcMildCal = (TextView) view.findViewById(R.id.tvMildCalories);
-        calcLosePoundCal = (TextView) view.findViewById(R.id.tvLosePoundCalories);
-        calcExtremeCal = (TextView) view.findViewById(R.id.tvExtremeCalories);
         inchesChild = (EditText) view.findViewById(R.id.tilInchesChild);
     }
 

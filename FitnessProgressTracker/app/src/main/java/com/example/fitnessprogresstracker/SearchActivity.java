@@ -17,6 +17,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,6 +39,7 @@ public class SearchActivity extends AppCompatActivity {
     private EditText searchField;
     private Button searchBtn;
     private RecyclerView usersList;
+    private Spinner activity;
 
     private DatabaseReference databaseReference;
     private FirebaseAuth firebaseAuth;

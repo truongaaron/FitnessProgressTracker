@@ -14,6 +14,13 @@
         <item value="1.9">Intense Job + Exercise 6-7 days/week</item>
     </string-array>
 
+    <string-array name="goals">
+        <item>Maintain Weight</item>
+        <item>Lose .5 lbs per week</item>
+        <item>Lose 1 lb(s) per week</item>
+        <item>Lose 2 lbs per week</item>
+    </string-array>
+
     <string-array name="user_names">
         <item>User 1</item>
         <item>User 2</item>
