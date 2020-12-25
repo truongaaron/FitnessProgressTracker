@@ -1,11 +1,14 @@
 package com.example.fitnessprogresstracker;
 
+import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +17,20 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +51,11 @@ public class ProgressFragment extends Fragment {
     private List<ImageView> ldelButtons = new ArrayList<>();
     private String foodInputStr, calInputStr, calRemStr;
     private ProgressFoodListAdapter progAdapter;
+
+    private FirebaseAuth firebaseAuth;
+    private DatabaseReference databaseReference;
+
+    private FirebaseRecyclerAdapter firebaseRecyclerAdapter;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -87,34 +108,113 @@ public class ProgressFragment extends Fragment {
         submitFood = view.findViewById(R.id.btnAddFood);
         deleteFood = view.findViewById(R.id.ivFoodListDelete);
 
-        progAdapter = new ProgressFoodListAdapter(getActivity(), lfoodNames, lcalCounts, ldelButtons);
+        changeUserCalories();
+        checkForExistingLists();
 
-        submitFood.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                foodInputStr = (foodInput.getEditText().getText()).toString();
-                calInputStr = (calorieInput.getEditText().getText()).toString();
+        submitFood.setOnClickListener(v -> {
+            foodInputStr = (foodInput.getEditText().getText()).toString();
+            calInputStr = (calorieInput.getEditText().getText()).toString();
 
-                if(validate()) {
-                    addItemsToList();
-                    
-                    progAdapter = new ProgressFoodListAdapter(getActivity(), lfoodNames, lcalCounts, ldelButtons);
+            if(validate()) {
+                checkIfChildExists();
+                addItemsToList();
 
-                    foodList.setAdapter(progAdapter);
-                    foodList.setLayoutManager(new LinearLayoutManager(getActivity()));
+                progAdapter = new ProgressFoodListAdapter(getActivity(), lfoodNames, lcalCounts, ldelButtons);
 
-                    caloriesRemaining.setText(Integer.toString(subtractRemainingCalories()));
-                    foodInput.getEditText().setText("");
-                    calorieInput.getEditText().setText("");
+                foodList.setAdapter(progAdapter);
+                foodList.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-                }
-                delayButtonPress(submitFood);
+                String remCals = Integer.toString(subtractRemainingCalories());
+                caloriesRemaining.setText(remCals);
+
+                firebaseAuth = FirebaseAuth.getInstance();
+                databaseReference = FirebaseDatabase.getInstance().getReference(firebaseAuth.getUid());
+                databaseReference = databaseReference.child("userCalories");
+                databaseReference.setValue(remCals);
+
+                databaseReference = FirebaseDatabase.getInstance().getReference(firebaseAuth.getUid()).child("userFoodList");
+                databaseReference.setValue(lfoodNames);
+                databaseReference = FirebaseDatabase.getInstance().getReference(firebaseAuth.getUid()).child("userCalorieList");
+                databaseReference.setValue(lcalCounts);
+
+                foodInput.getEditText().setText("");
+                calorieInput.getEditText().setText("");
             }
+            delayButtonPress(submitFood);
         });
 
         return view;
     }
 
+    private void changeUserCalories() {
+        firebaseAuth = FirebaseAuth.getInstance();
+        databaseReference = FirebaseDatabase.getInstance().getReference(firebaseAuth.getUid());
+
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                UserProfile userProfile = snapshot.getValue(UserProfile.class);
+                caloriesRemaining.setText(userProfile.getUserCalories());
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(getActivity(), error.getCode(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void checkForExistingLists() {
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference(firebaseAuth.getUid());
+        ref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(snapshot.hasChild("userFoodList")) {
+                    List<String> temp = new ArrayList<>();
+                    List<ImageView> tempDelBtns = new ArrayList<>();
+                    for(DataSnapshot ds : snapshot.child("userFoodList").getChildren()) {
+                        String food = ds.getValue(String.class);
+                        temp.add(food);
+                        tempDelBtns.add(deleteFood);
+                    }
+                    lfoodNames = new ArrayList<>(temp);
+                    ldelButtons = new ArrayList<>(tempDelBtns);
+
+                }
+
+                if(snapshot.hasChild("userCalorieList")) {
+                    List<String> temp = new ArrayList<>();
+                    for(DataSnapshot ds : snapshot.child("userCalorieList").getChildren()) {
+                        String food = ds.getValue(String.class);
+                        temp.add(food);
+                    }
+                    lcalCounts = new ArrayList<>(temp);
+                }
+
+                progAdapter = new ProgressFoodListAdapter(getActivity(), lfoodNames, lcalCounts, ldelButtons);
+                foodList.setAdapter(progAdapter);
+                foodList.setLayoutManager(new LinearLayoutManager(getActivity()));
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) { } });
+    }
+
+    private void checkIfChildExists() {
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference(firebaseAuth.getUid());
+        ref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (!snapshot.hasChild("userFoodList")) {
+                    lfoodNames.clear();
+                    lcalCounts.clear();
+                    ldelButtons.clear();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) { } });
+    }
 
     private void addItemsToList() {
         lfoodNames.add(foodInputStr);
@@ -131,11 +231,65 @@ public class ProgressFragment extends Fragment {
         return calRem - cal;
     }
 
-    public void revertRemainingCalories(int deletedCalories) {
+    public void revertRemainingCalories(int deletedCalories, int position) {
         calRemStr = caloriesRemaining.getText().toString();
         int calRem = Integer.parseInt(calRemStr);
 
-        caloriesRemaining.setText(Integer.toString(calRem + deletedCalories));
+        String revertedCals = Integer.toString(calRem + deletedCalories);
+        caloriesRemaining.setText(revertedCals);
+
+        firebaseAuth = FirebaseAuth.getInstance();
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference(firebaseAuth.getUid());
+        databaseReference = databaseReference.child("userCalories");
+        databaseReference.setValue(revertedCals);
+
+        databaseReference = FirebaseDatabase.getInstance().getReference(firebaseAuth.getUid()).child("userFoodList");
+        databaseReference.child(Integer.toString(position)).removeValue();
+        databaseReference = FirebaseDatabase.getInstance().getReference(firebaseAuth.getUid()).child("userCalorieList");
+        databaseReference.child(Integer.toString(position)).removeValue();
+
+    }
+
+    public void shrinkFirebaseList() {
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference(firebaseAuth.getUid());
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(snapshot.hasChild("userFoodList")) {
+                    List<String> temp = new ArrayList<>();
+                    List<ImageView> tempDelBtns = new ArrayList<>();
+                    for(DataSnapshot ds : snapshot.child("userFoodList").getChildren()) {
+                        String food = ds.getValue(String.class);
+                        temp.add(food);
+                        tempDelBtns.add(deleteFood);
+                    }
+                    databaseReference = FirebaseDatabase.getInstance().getReference(firebaseAuth.getUid());
+                    databaseReference.child("userFoodList").removeValue();
+                    lfoodNames = new ArrayList<>(temp);
+                    ldelButtons = new ArrayList<>(tempDelBtns);
+                    databaseReference = databaseReference.child("userFoodList");
+                    databaseReference.setValue(lfoodNames);
+                }
+
+                if(snapshot.hasChild("userCalorieList")) {
+                    List<String> temp = new ArrayList<>();
+                    for(DataSnapshot ds : snapshot.child("userCalorieList").getChildren()) {
+                        String food = ds.getValue(String.class);
+                        temp.add(food);
+                    }
+                    databaseReference = FirebaseDatabase.getInstance().getReference(firebaseAuth.getUid());
+                    databaseReference.child("userCalorieList").removeValue();
+                    lcalCounts = new ArrayList<>(temp);
+                    databaseReference = databaseReference.child("userCalorieList");
+                    databaseReference.setValue(lcalCounts);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 
     private void delayButtonPress(Button myButton) {
@@ -162,5 +316,18 @@ public class ProgressFragment extends Fragment {
 
         return result;
     }
+
+    public List<String> getFoodList() {
+        return lfoodNames;
+    }
+
+    public List<String> getCalList() {
+        return lcalCounts;
+    }
+
+    public List<ImageView> getDelBtnList() {
+        return ldelButtons;
+    }
+
 
 }

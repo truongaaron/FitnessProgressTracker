@@ -147,7 +147,6 @@ public class SearchActivity extends AppCompatActivity {
 
         switch(item.getItemId()) {
             case android.R.id.home:
-                // firebaseRecyclerAdapter.stopListening();
                 onBackPressed();
         }
         return super.onOptionsItemSelected(item);

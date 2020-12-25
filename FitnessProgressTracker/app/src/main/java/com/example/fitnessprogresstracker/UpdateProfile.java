@@ -111,7 +111,9 @@ public class UpdateProfile extends AppCompatActivity {
                 String email = newUserEmail.getText().toString();
                 String calories = newUserCalories.getText().toString();
 
-                UserProfile userProfile = new UserProfile(age, email, name, calories);
+                ProgressFragment pf = new ProgressFragment();
+
+                UserProfile userProfile = new UserProfile(age, email, name, calories, pf.getFoodList(), pf.getCalList(), pf.getDelBtnList());
 
                 databaseReference.setValue(userProfile);
 

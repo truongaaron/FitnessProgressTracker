@@ -16,6 +16,11 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,9 +32,6 @@ public class ProgressFoodListAdapter extends RecyclerView.Adapter<ProgressFoodLi
     List<ImageView> deleteButtons;
     Context context;
     RecyclerView.ViewHolder viewHolder;
-
-    private TextView caloriesRemaining;
-    private String calRemStr;
 
     public ProgressFoodListAdapter(Context ct, List<String> s1, List<String> s2, List<ImageView> images) {
         context = ct;
@@ -43,8 +45,6 @@ public class ProgressFoodListAdapter extends RecyclerView.Adapter<ProgressFoodLi
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(context);
         View view = inflater.inflate(R.layout.progress_food_row, parent, false);
-
-
 
         viewHolder = new MyViewHolder(view);
         return new MyViewHolder(view);
@@ -61,16 +61,16 @@ public class ProgressFoodListAdapter extends RecyclerView.Adapter<ProgressFoodLi
             public void onClick(View v) {
                 if(deleteButtons.size() != 0){
 
-                    Log.d("POSSSSS: ", deleteButtons.toString());
-
                     int cal = Integer.parseInt(lcalories.get(position).split(" ")[0]);
-                    pf.revertRemainingCalories(cal);
+                    pf.revertRemainingCalories(cal, position);
 
                     deleteButtons.remove(position);
                     lfoodNames.remove(position);
                     lcalories.remove(position);
+
                     notifyItemRemoved(position);
                     notifyItemRangeChanged(position, lfoodNames.size());
+                    pf.shrinkFirebaseList();
                     delayButtonPress(holder.delete);
                 }
             }

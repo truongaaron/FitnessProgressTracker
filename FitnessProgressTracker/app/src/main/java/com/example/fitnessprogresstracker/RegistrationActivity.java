@@ -248,8 +248,10 @@ public class RegistrationActivity extends AppCompatActivity implements AdapterVi
         UserSearch userSearch = new UserSearch(name, firebaseAuth.getUid());
         users.setValue(userSearch);
 
+        ProgressFragment pf = new ProgressFragment();
 
-        UserProfile userProfile = new UserProfile(age, email, name, goalStr);
+
+        UserProfile userProfile = new UserProfile(age, email, name, goalStr, pf.getFoodList(), pf.getCalList(), pf.getDelBtnList());
         myRef.setValue(userProfile);
     }
 
