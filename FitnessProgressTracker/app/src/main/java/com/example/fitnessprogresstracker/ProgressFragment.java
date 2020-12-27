@@ -51,6 +51,7 @@ public class ProgressFragment extends Fragment {
     private List<ImageView> ldelButtons = new ArrayList<>();
     private String foodInputStr, calInputStr, calRemStr;
     private ProgressFoodListAdapter progAdapter;
+    private boolean childExists;
 
     private FirebaseAuth firebaseAuth;
     private DatabaseReference databaseReference;
@@ -197,7 +198,7 @@ public class ProgressFragment extends Fragment {
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError error) { } });
+            public void onCancelled(@NonNull DatabaseError error) { Toast.makeText(getActivity(), error.getCode(), Toast.LENGTH_SHORT).show(); } });
     }
 
     private void checkIfChildExists() {
@@ -213,7 +214,7 @@ public class ProgressFragment extends Fragment {
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError error) { } });
+            public void onCancelled(@NonNull DatabaseError error) { Toast.makeText(getActivity(), error.getCode(), Toast.LENGTH_SHORT).show(); } });
     }
 
     private void addItemsToList() {
@@ -223,31 +224,50 @@ public class ProgressFragment extends Fragment {
     }
 
     private int subtractRemainingCalories() {
-        calInputStr = (calorieInput.getEditText().getText()).toString();
-        calRemStr = caloriesRemaining.getText().toString();
-        int cal = Integer.parseInt(calInputStr);
-        int calRem = Integer.parseInt(calRemStr);
+            calInputStr = (calorieInput.getEditText().getText()).toString();
+            calRemStr = caloriesRemaining.getText().toString();
+            int cal = Integer.parseInt(calInputStr);
+            int calRem = Integer.parseInt(calRemStr);
 
         return calRem - cal;
     }
 
     public void revertRemainingCalories(int deletedCalories, int position) {
-        calRemStr = caloriesRemaining.getText().toString();
-        int calRem = Integer.parseInt(calRemStr);
-
-        String revertedCals = Integer.toString(calRem + deletedCalories);
-        caloriesRemaining.setText(revertedCals);
 
         firebaseAuth = FirebaseAuth.getInstance();
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference(firebaseAuth.getUid());
-        databaseReference = databaseReference.child("userCalories");
-        databaseReference.setValue(revertedCals);
+
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference(firebaseAuth.getUid());
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.hasChild("userFoodList")) {
+                    calRemStr = caloriesRemaining.getText().toString();
+                    int calRem = Integer.parseInt(calRemStr);
+
+                    String revertedCals = Integer.toString(calRem + deletedCalories);
+                    caloriesRemaining.setText(revertedCals);
+
+
+                    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference(firebaseAuth.getUid());
+                    databaseReference = databaseReference.child("userCalories");
+                    databaseReference.setValue(revertedCals);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(getActivity(), error.getCode(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+
 
         databaseReference = FirebaseDatabase.getInstance().getReference(firebaseAuth.getUid()).child("userFoodList");
         databaseReference.child(Integer.toString(position)).removeValue();
         databaseReference = FirebaseDatabase.getInstance().getReference(firebaseAuth.getUid()).child("userCalorieList");
         databaseReference.child(Integer.toString(position)).removeValue();
 
+        checkIfChildExists();
     }
 
     public void shrinkFirebaseList() {
@@ -287,7 +307,7 @@ public class ProgressFragment extends Fragment {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
+                Toast.makeText(getActivity(), error.getCode(), Toast.LENGTH_SHORT).show();
             }
         });
     }
