@@ -349,5 +349,4 @@ public class ProgressFragment extends Fragment {
         return ldelButtons;
     }
 
-
 }

@@ -16,17 +16,13 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
-import com.firebase.ui.database.SnapshotParser;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
@@ -136,7 +132,7 @@ public class SearchActivity extends AppCompatActivity {
         public UsersViewHolder(@NonNull View itemView) {
             super(itemView);
             name = itemView.findViewById(R.id.tvSearchResultName);
-            img = itemView.findViewById(R.id.ivSearchResultImage);
+            img = itemView.findViewById(R.id.ivBefore);
 
             view = itemView;
         }
