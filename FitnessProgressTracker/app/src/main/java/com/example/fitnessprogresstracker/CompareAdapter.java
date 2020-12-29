@@ -32,6 +32,7 @@ public class CompareAdapter extends RecyclerView.Adapter<CompareAdapter.MyViewHo
     List<Button> deleteBtns;
     Context context;
     RecyclerView.ViewHolder viewHolder;
+    public static int pos1, pos2;
 
     public CompareAdapter(Context ct, List<ImageView> beforePics, List<ImageView> afterPics, List<Button> deleteBtns) {
         context = ct;
@@ -59,6 +60,7 @@ public class CompareAdapter extends RecyclerView.Adapter<CompareAdapter.MyViewHo
             @Override
             public void onClick(View v) {
                 beforePics.get(position).performClick();
+                pos1 = position;
             }
         });
 
@@ -68,6 +70,7 @@ public class CompareAdapter extends RecyclerView.Adapter<CompareAdapter.MyViewHo
             @Override
             public void onClick(View v) {
                 afterPics.get(position).performClick();
+                pos2 = position;
             }
         });
 

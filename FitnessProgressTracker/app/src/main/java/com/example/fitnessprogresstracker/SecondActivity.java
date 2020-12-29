@@ -86,7 +86,7 @@ public class SecondActivity extends AppCompatActivity {
             imagePath = data.getData();
             try {
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imagePath);
-                cf.getBeforeList().get(cf.getBeforeList().size()-1).setImageBitmap(bitmap);
+                cf.getBeforeList().get(cf.getAdapter().pos1).setImageBitmap(bitmap);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -97,7 +97,7 @@ public class SecondActivity extends AppCompatActivity {
             imagePath = data.getData();
             try {
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imagePath);
-                cf.getAfterList().get(cf.getAfterList().size()-1).setImageBitmap(bitmap);
+                cf.getAfterList().get(cf.getAdapter().pos2).setImageBitmap(bitmap);
             } catch (IOException e) {
                 e.printStackTrace();
             }
