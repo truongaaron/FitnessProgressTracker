@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -14,6 +15,9 @@ import android.view.ViewGroup;
  * create an instance of this fragment.
  */
 public class BlogFragment extends Fragment {
+
+    private ImageView image;
+    CompareFragment cf = new CompareFragment();
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -58,7 +62,18 @@ public class BlogFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_blog, container, false);
+        ImageView img = new ImageView(getActivity());
+        img.setImageResource(R.drawable.default_profile_picture);
+
+        cf.getBeforeList().add(img);
+
+        image = view.findViewById(R.id.testImageView);
+
+        image.setImageDrawable(cf.getBeforeList().get(cf.getBeforeList().size()-1).getDrawable());
+
+
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_blog, container, false);
+        return view;
     }
 }

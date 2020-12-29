@@ -1,9 +1,11 @@
 package com.example.fitnessprogresstracker;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,20 +23,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.io.IOException;
 import java.util.List;
 
+import static androidx.core.app.ActivityCompat.startActivityForResult;
+
 public class CompareAdapter extends RecyclerView.Adapter<CompareAdapter.MyViewHolder> {
-
-    SecondActivity sa;
-
-    private static int PICK_IMAGE = 123;
-    Uri imagePath;
-    ImageView temp;
 
     List<ImageView> beforePics, afterPics;
     List<Button> deleteBtns;
     Context context;
     RecyclerView.ViewHolder viewHolder;
-    private ComparisonClickListener clickListener;
-
 
     public CompareAdapter(Context ct, List<ImageView> beforePics, List<ImageView> afterPics, List<Button> deleteBtns) {
         context = ct;
@@ -48,6 +44,7 @@ public class CompareAdapter extends RecyclerView.Adapter<CompareAdapter.MyViewHo
     public CompareAdapter.MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(context);
         View view = inflater.inflate(R.layout.compare_row, parent, false);
+        context = parent.getContext();
 
         viewHolder = new CompareAdapter.MyViewHolder(view);
         return new CompareAdapter.MyViewHolder(view);
@@ -55,26 +52,17 @@ public class CompareAdapter extends RecyclerView.Adapter<CompareAdapter.MyViewHo
 
     @Override
     public void onBindViewHolder(@NonNull CompareAdapter.MyViewHolder holder, int position) {
-        holder.before.setImageResource(R.drawable.default_profile_picture);
-        holder.after.setImageResource(R.drawable.default_profile_picture);
-
         holder.before.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent();
-                intent.setType("image/*"); // application/pdf audio/mp3 or *
-                intent.setAction(Intent.ACTION_GET_CONTENT);
-                sa.startActivityForResult(Intent.createChooser(intent, "Select Image"), PICK_IMAGE);
+                beforePics.get(position).performClick();
             }
         });
 
         holder.after.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent();
-                intent.setType("image/*"); // application/pdf audio/mp3 or *
-                intent.setAction(Intent.ACTION_GET_CONTENT);
-                sa.startActivityForResult(Intent.createChooser(intent, "Select Image"), PICK_IMAGE);
+
             }
         });
 

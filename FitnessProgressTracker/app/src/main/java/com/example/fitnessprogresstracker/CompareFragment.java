@@ -1,18 +1,25 @@
 package com.example.fitnessprogresstracker;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,11 +33,10 @@ public class CompareFragment extends Fragment {
 
     private ImageView addComparisons;
     private Button removeComparisons;
-    private List<ImageView> beforeList = new ArrayList<>(), afterList = new ArrayList<>();
+    private static List<ImageView> beforeList = new ArrayList<>(), afterList = new ArrayList<>();
     private List<Button> deleteBtnList = new ArrayList<>();
-    private RecyclerView rvComparisons;
-    private CompareAdapter adapter;
-    private ComparisonClickListener clickListener;
+    private static RecyclerView rvComparisons;
+    private static CompareAdapter adapter;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -83,6 +89,21 @@ public class CompareFragment extends Fragment {
             public void onClick(View v) {
                 addImagesToList();
 
+                for(int i = 0; i < beforeList.size(); i++) {
+                    beforeList.get(i).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent gallery = new Intent();
+                            gallery.setType("image/*");
+                            gallery.setAction(Intent.ACTION_GET_CONTENT);
+                            startActivityForResult(Intent.createChooser(gallery, "Select Image"), 69);
+                        }
+                    });
+                }
+
+                Toast.makeText(getActivity(), "Success", Toast.LENGTH_LONG).show();
+
+                Log.d("Bitmap After: ", beforeList.get(beforeList.size()-1).getDrawable().toString());
                 adapter = new CompareAdapter(getActivity(), beforeList, afterList, deleteBtnList);
                 rvComparisons.setAdapter(adapter);
                 rvComparisons.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -90,6 +111,7 @@ public class CompareFragment extends Fragment {
                 delayButtonPress(addComparisons);
             }
         });
+
 
 
         return view;
@@ -107,7 +129,30 @@ public class CompareFragment extends Fragment {
         beforeList.add(fillerImg);
         afterList.add(fillerImg);
 
+        beforeList.get(beforeList.size()-1).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+
         deleteBtnList.add(removeComparisons);
+    }
+
+    public CompareAdapter getAdapter() {
+        return adapter;
+    }
+
+    public List<ImageView> getBeforeList() {
+        return beforeList;
+    }
+
+    public List<ImageView> getAfterList() { return afterList; }
+
+
+    public RecyclerView getRV() {
+        return rvComparisons;
     }
 
     private void delayButtonPress(ImageView myButton) {
@@ -120,6 +165,10 @@ public class CompareFragment extends Fragment {
         }, 2500);
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+    }
 
 
 }

@@ -3,15 +3,21 @@ package com.example.fitnessprogresstracker;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.NavigationUI;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.VectorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -31,14 +37,9 @@ import java.io.IOException;
 
 public class SecondActivity extends AppCompatActivity {
 
-    FirebaseAuth firebaseAuth;
-    FirebaseStorage firebaseStorage;
-    StorageReference storageReference;
-    private static int PICK_IMAGE = 123;
+    final Context context = this;
+    final static int PICK_IMAGE = 69;
     Uri imagePath;
-    ImageView temp;
-
-    CompareFragment cf;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,20 +50,7 @@ public class SecondActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.fragment);
 
         NavigationUI.setupWithNavController(bottomNavigationView, navController);
-        cf = new CompareFragment();
 
-        firebaseStorage = FirebaseStorage.getInstance();
-        firebaseAuth = FirebaseAuth.getInstance();
-        firebaseStorage = FirebaseStorage.getInstance();
-
-        storageReference = firebaseStorage.getReference();
-        storageReference.child("Default_Profile_Picture.jpg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-            @Override
-            public void onSuccess(Uri uri) {
-                imagePath = uri;
-                Log.d("Success", "ya");
-            }
-        });
     }
 
     @Override
@@ -82,15 +70,23 @@ public class SecondActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    public Context getContext() {
+        return context;
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+        CompareFragment cf = new CompareFragment();
+        Log.d("Bitmap Before: ", cf.getBeforeList().get(cf.getBeforeList().size()-1).getDrawable().toString());
+
         if(requestCode == PICK_IMAGE && resultCode == RESULT_OK && data.getData() != null) {
             imagePath = data.getData();
             try {
+                Log.d("Bitmap Before: ", cf.getBeforeList().get(cf.getBeforeList().size()-1).getDrawable().toString());
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imagePath);
-                temp.setImageBitmap(bitmap);
+                cf.getBeforeList().get(cf.getBeforeList().size()-1).setImageBitmap(bitmap);
             } catch (IOException e) {
                 e.printStackTrace();
             }
