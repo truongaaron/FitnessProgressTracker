@@ -17,6 +17,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -52,6 +53,8 @@ public class CompareAdapter extends RecyclerView.Adapter<CompareAdapter.MyViewHo
 
     @Override
     public void onBindViewHolder(@NonNull CompareAdapter.MyViewHolder holder, int position) {
+        holder.before.setImageDrawable(beforePics.get(position).getDrawable());
+        holder.before.bringToFront();
         holder.before.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -59,10 +62,12 @@ public class CompareAdapter extends RecyclerView.Adapter<CompareAdapter.MyViewHo
             }
         });
 
+        holder.after.setImageDrawable(afterPics.get(position).getDrawable());
+        holder.after.bringToFront();
         holder.after.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                afterPics.get(position).performClick();
             }
         });
 

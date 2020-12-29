@@ -3,6 +3,7 @@ package com.example.fitnessprogresstracker;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -21,6 +22,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,7 +38,8 @@ public class CompareFragment extends Fragment {
     private static List<ImageView> beforeList = new ArrayList<>(), afterList = new ArrayList<>();
     private List<Button> deleteBtnList = new ArrayList<>();
     private static RecyclerView rvComparisons;
-    private static CompareAdapter adapter;
+    public static CompareAdapter adapter;
+
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -89,21 +92,28 @@ public class CompareFragment extends Fragment {
             public void onClick(View v) {
                 addImagesToList();
 
-                for(int i = 0; i < beforeList.size(); i++) {
-                    beforeList.get(i).setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            Intent gallery = new Intent();
-                            gallery.setType("image/*");
-                            gallery.setAction(Intent.ACTION_GET_CONTENT);
-                            startActivityForResult(Intent.createChooser(gallery, "Select Image"), 69);
-                        }
-                    });
-                }
+                beforeList.get(beforeList.size()-1).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent gallery = new Intent();
+                        gallery.setType("image/*");
+                        gallery.setAction(Intent.ACTION_GET_CONTENT);
+                        getActivity().startActivityForResult(Intent.createChooser(gallery, "Select Image"), 1);
 
-                Toast.makeText(getActivity(), "Success", Toast.LENGTH_LONG).show();
+                    }
+                });
 
-                Log.d("Bitmap After: ", beforeList.get(beforeList.size()-1).getDrawable().toString());
+                afterList.get(afterList.size()-1).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent gallery = new Intent();
+                        gallery.setType("image/*");
+                        gallery.setAction(Intent.ACTION_GET_CONTENT);
+                        getActivity().startActivityForResult(Intent.createChooser(gallery, "Select Image"), 3);
+                    }
+                });
+
+
                 adapter = new CompareAdapter(getActivity(), beforeList, afterList, deleteBtnList);
                 rvComparisons.setAdapter(adapter);
                 rvComparisons.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -111,7 +121,6 @@ public class CompareFragment extends Fragment {
                 delayButtonPress(addComparisons);
             }
         });
-
 
 
         return view;
@@ -125,18 +134,11 @@ public class CompareFragment extends Fragment {
 
     private void addImagesToList() {
         ImageView fillerImg = new ImageView(getActivity());
-        fillerImg.setImageResource(R.drawable.ic_baseline_add_circle_24);
+        ImageView fillerImg2 = new ImageView(getActivity());
+        fillerImg.setImageResource(R.drawable.default_profile_picture);
+        fillerImg2.setImageResource(R.drawable.default_profile_picture);
         beforeList.add(fillerImg);
-        afterList.add(fillerImg);
-
-        beforeList.get(beforeList.size()-1).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
-
-
+        afterList.add(fillerImg2);
         deleteBtnList.add(removeComparisons);
     }
 
@@ -149,7 +151,6 @@ public class CompareFragment extends Fragment {
     }
 
     public List<ImageView> getAfterList() { return afterList; }
-
 
     public RecyclerView getRV() {
         return rvComparisons;

@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.NavigationUI;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.content.Context;
 import android.content.Intent;
@@ -34,11 +35,11 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.io.IOException;
+import java.util.List;
 
 public class SecondActivity extends AppCompatActivity {
 
     final Context context = this;
-    final static int PICK_IMAGE = 69;
     Uri imagePath;
 
     @Override
@@ -79,17 +80,31 @@ public class SecondActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         CompareFragment cf = new CompareFragment();
-        Log.d("Bitmap Before: ", cf.getBeforeList().get(cf.getBeforeList().size()-1).getDrawable().toString());
 
-        if(requestCode == PICK_IMAGE && resultCode == RESULT_OK && data.getData() != null) {
+        if(requestCode == 1 && resultCode == RESULT_OK && data.getData() != null) {
+            Log.d("entered: ", "one");
             imagePath = data.getData();
             try {
-                Log.d("Bitmap Before: ", cf.getBeforeList().get(cf.getBeforeList().size()-1).getDrawable().toString());
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imagePath);
                 cf.getBeforeList().get(cf.getBeforeList().size()-1).setImageBitmap(bitmap);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
+
+        if(requestCode == 3 && resultCode == RESULT_OK && data.getData() != null) {
+            Log.d("entered: ", "three");
+            imagePath = data.getData();
+            try {
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imagePath);
+                cf.getAfterList().get(cf.getAfterList().size()-1).setImageBitmap(bitmap);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        cf.adapter.notifyDataSetChanged();
     }
+
+
 }
