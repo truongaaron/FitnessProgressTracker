@@ -5,6 +5,11 @@
     android:id="@+id/my_nav"
     app:startDestination="@id/homeFragment">
 
+    <fragment
+        android:id="@+id/postFragment"
+        android:name="com.example.fitnessprogresstracker.PostFragment"
+        android:label="fragment_post"
+        tools:layout="@layout/fragment_post" />
     <activity
         android:id="@+id/journalActivity"
         android:name="com.example.fitnessprogresstracker.JournalActivity"

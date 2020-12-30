@@ -155,7 +155,7 @@ public class PostFragment<RecylcerView> extends Fragment {
 
     private void sendUserData() {
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-        DatabaseReference postsRef = firebaseDatabase.getReference("Posts");
+        DatabaseReference postsRef = firebaseDatabase.getReference(firebaseAuth.getUid()).child("Posts");
 
 
         UserPost userPost = new UserPost(name, postContent);

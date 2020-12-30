@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
@@ -21,6 +22,21 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
+
+import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.ListResult;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -40,6 +56,10 @@ public class CompareFragment extends Fragment {
     private static RecyclerView rvComparisons;
     public static CompareAdapter adapter;
 
+    private FirebaseAuth firebaseAuth;
+    private FirebaseStorage firebaseStorage;
+    private StorageReference storageReference;
+    private Uri fillerImage;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -79,6 +99,7 @@ public class CompareFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+
     }
 
     @Override
@@ -86,6 +107,12 @@ public class CompareFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_compare, container, false);
         setupUIviews(view);
+
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseStorage = FirebaseStorage.getInstance();
+        storageReference = firebaseStorage.getReference();
+
+        addExistingComparisons();
 
         addComparisons.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -99,7 +126,6 @@ public class CompareFragment extends Fragment {
                         gallery.setType("image/*");
                         gallery.setAction(Intent.ACTION_GET_CONTENT);
                         getActivity().startActivityForResult(Intent.createChooser(gallery, "Select Image"), 1);
-
                     }
                 });
 
@@ -116,7 +142,7 @@ public class CompareFragment extends Fragment {
 
                 adapter = new CompareAdapter(getActivity(), beforeList, afterList, deleteBtnList);
                 rvComparisons.setAdapter(adapter);
-                rvComparisons.setLayoutManager(new LinearLayoutManager(getActivity()));
+                rvComparisons.setLayoutManager(new LinearLayoutManager(getActivity()));;
 
                 delayButtonPress(addComparisons);
             }
@@ -124,6 +150,51 @@ public class CompareFragment extends Fragment {
 
 
         return view;
+    }
+
+    private void addExistingComparisons() {
+        beforeList.clear();
+        afterList.clear();
+        deleteBtnList.clear();
+
+        adapter = new CompareAdapter(getActivity(), beforeList, afterList, deleteBtnList);
+        rvComparisons.setAdapter(adapter);
+        rvComparisons.setLayoutManager(new LinearLayoutManager(getActivity()));
+        firebaseAuth = FirebaseAuth.getInstance();
+
+        StorageReference ref = FirebaseStorage.getInstance().getReference(firebaseAuth.getUid()).child("Images").child("Before Pics");
+        ref.listAll().addOnSuccessListener(new OnSuccessListener<ListResult>() {
+            @Override
+            public void onSuccess(ListResult listResult) {
+                for(StorageReference fileRef : listResult.getItems()) {
+                    fillListWithImages();
+                    setOnClickListeners(beforeList, 1);
+                    setOnClickListeners(afterList, 3);
+
+                }
+
+                adapter.notifyDataSetChanged();
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(getActivity(), "Error " + e, Toast.LENGTH_LONG).show();
+            }
+        });
+
+        Log.d("List Here: ", beforeList.toString());
+    }
+
+    public void setOnClickListeners(List<ImageView> list, int requestCode) {
+        list.get(list.size()-1).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent gallery = new Intent();
+                gallery.setType("image/*");
+                gallery.setAction(Intent.ACTION_GET_CONTENT);
+                getActivity().startActivityForResult(Intent.createChooser(gallery, "Select Image"), requestCode);
+            }
+        });
     }
 
     private void setupUIviews(View view) {
@@ -139,7 +210,38 @@ public class CompareFragment extends Fragment {
         fillerImg2.setImageResource(R.drawable.default_profile_picture);
         beforeList.add(fillerImg);
         afterList.add(fillerImg2);
+        storeImage(beforeList.size()-1, "Before Pics");
+        storeImage(afterList.size()-1, "After Pics");
         deleteBtnList.add(removeComparisons);
+        //adapter.notifyDataSetChanged();
+    }
+
+    private void fillListWithImages() {
+        ImageView fillerImg = new ImageView(getActivity());
+        ImageView fillerImg2 = new ImageView(getActivity());
+        fillerImg.setImageResource(R.drawable.default_profile_picture);
+        fillerImg2.setImageResource(R.drawable.default_profile_picture);
+        beforeList.add(fillerImg);
+        afterList.add(fillerImg2);
+        deleteBtnList.add(removeComparisons);
+    }
+
+    public void storeImage(int position, String child) {
+        fillerImage = Uri.parse("android.resource://com.example.fitnessprogresstracker/" + R.drawable.default_profile_picture);
+        StorageReference imageReference = storageReference.child(firebaseAuth.getUid()).child("Images").child(child).child(Integer.toString(position));
+        UploadTask uploadTask = imageReference.putFile(fillerImage);
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(getActivity(), "Upload Failed.", Toast.LENGTH_SHORT).show();
+            }
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void
+            onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                Toast.makeText(getActivity(), "Picture Successfully Uploaded.", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     public CompareAdapter getAdapter() {

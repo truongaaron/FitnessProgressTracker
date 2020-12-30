@@ -14,12 +14,22 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.ListResult;
+import com.google.firebase.storage.StorageReference;
+import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
 import java.util.List;
@@ -54,8 +64,27 @@ public class CompareAdapter extends RecyclerView.Adapter<CompareAdapter.MyViewHo
 
     @Override
     public void onBindViewHolder(@NonNull CompareAdapter.MyViewHolder holder, int position) {
+
+        Log.d("Positions2" , Integer.toString(position));
+        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        StorageReference ref = FirebaseStorage.getInstance().getReference(firebaseAuth.getUid()).child("Images").child("Before Pics");
+        ref.child(Integer.toString(position)).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                Picasso.get().load(uri).fit().centerCrop().into(holder.before);
+            }
+        });
+
+        ref = FirebaseStorage.getInstance().getReference(firebaseAuth.getUid()).child("Images").child("After Pics");
+        ref.child(Integer.toString(position)).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                Picasso.get().load(uri).fit().centerCrop().into(holder.after);
+            }
+        });
+
+        
         holder.before.setImageDrawable(beforePics.get(position).getDrawable());
-        holder.before.bringToFront();
         holder.before.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -65,7 +94,6 @@ public class CompareAdapter extends RecyclerView.Adapter<CompareAdapter.MyViewHo
         });
 
         holder.after.setImageDrawable(afterPics.get(position).getDrawable());
-        holder.after.bringToFront();
         holder.after.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -13,7 +13,7 @@
         android:icon="@drawable/ic_baseline_safety_divider_24"
         android:title="Compare" />
     <item
-        android:id="@+id/journalActivity"
+        android:id="@+id/postFragment"
         android:checked="true"
         android:icon="@drawable/ic_journal"
         android:title="Journal" />
