@@ -18,6 +18,7 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.VectorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -37,11 +38,16 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.security.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -55,6 +61,7 @@ public class SecondActivity extends AppCompatActivity {
     private FirebaseAuth firebaseAuth;
     private FirebaseStorage firebaseStorage;
     private StorageReference storageReference;
+    CompareFragment cf = new CompareFragment();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,51 +103,67 @@ public class SecondActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        CompareFragment cf = new CompareFragment();
+        String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new java.util.Date());
 
         if(requestCode == 1 && resultCode == RESULT_OK && data.getData() != null) {
-            Log.d("entered: ", "one");
             imagePath = data.getData();
-            try {
-                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imagePath);
-                cf.getBeforeList().get(cf.getAdapter().pos1).setImageBitmap(bitmap);
-                storeImage(cf.getAdapter().pos1, "Before Pics");
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+
+            removeFromStorage("Before Pics", cf.getBeforeList().get(cf.getAdapter().pos1));
+            cf.getBeforeList().set(cf.getAdapter().pos1, timeStamp);
+            uploadImageToStorage(imagePath, "Before Pics", timeStamp);
         }
 
         if(requestCode == 3 && resultCode == RESULT_OK && data.getData() != null) {
-            Log.d("entered: ", "three");
             imagePath = data.getData();
-            try {
-                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imagePath);
-                cf.getAfterList().get(cf.getAdapter().pos2).setImageBitmap(bitmap);
-                storeImage(cf.getAdapter().pos2, "After Pics");
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+
+            removeFromStorage("After Pics", cf.getAfterList().get(cf.getAdapter().pos2));
+            cf.getAfterList().set(cf.getAdapter().pos2, timeStamp);
+            uploadImageToStorage(imagePath, "After Pics", timeStamp);
         }
 
-        cf.adapter.notifyDataSetChanged();
+        updateDatabase();
+
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+
+                cf.adapter.notifyDataSetChanged();
+
+            }
+        }, 5000);
+
+
     }
 
-    public void storeImage(int position, String child) {
-        StorageReference imageReference = storageReference.child(firebaseAuth.getUid()).child("Images").child(child).child(Integer.toString(position));
-        UploadTask uploadTask = imageReference.putFile(imagePath);
+    public void updateDatabase() {
+        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference(firebaseAuth.getUid()).child("userBeforeList");
+        dbRef.setValue(cf.getBeforeList());
+
+        dbRef = FirebaseDatabase.getInstance().getReference(firebaseAuth.getUid()).child("userAfterList");
+        dbRef.setValue(cf.getAfterList());
+    }
+
+    public void uploadImageToStorage(Uri uri, String childName, String uniqueID) {
+        Toast.makeText(SecondActivity.this, "Uploading Image...", Toast.LENGTH_LONG).show();
+        StorageReference imageReference = storageReference.child(firebaseAuth.getUid()).child("Images").child(childName).child(uniqueID); // User Id/Images/profile_pic.png
+        UploadTask uploadTask = imageReference.putFile(uri);
         uploadTask.addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                Toast.makeText(SecondActivity.this, "Upload Failed.", Toast.LENGTH_SHORT).show();
+                Log.d("Fail: ", e.toString());
             }
         }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
-            public void
-            onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                Toast.makeText(SecondActivity.this, "Picture Successfully Uploaded.", Toast.LENGTH_SHORT).show();
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                Log.d("Success: ", "File successfully uploaded to storage.");
             }
         });
     }
 
+    private void removeFromStorage(String childName, String uniqueID) {
+        StorageReference storage = firebaseStorage.getReference(firebaseAuth.getUid()).child("Images").child(childName).child(uniqueID);
+        storage.delete();
+    }
 
 }

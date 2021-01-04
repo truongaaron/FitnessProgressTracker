@@ -66,12 +66,6 @@ public class BlogFragment extends Fragment {
         ImageView img = new ImageView(getActivity());
         img.setImageResource(R.drawable.default_profile_picture);
 
-        cf.getBeforeList().add(img);
-
-        image = view.findViewById(R.id.testImageView);
-
-        image.setImageDrawable(cf.getBeforeList().get(cf.getBeforeList().size()-1).getDrawable());
-
 
         // Inflate the layout for this fragment
         return view;

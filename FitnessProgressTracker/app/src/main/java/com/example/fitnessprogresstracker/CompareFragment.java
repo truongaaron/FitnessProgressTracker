@@ -14,6 +14,7 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -38,7 +39,10 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
+import java.io.File;
 import java.io.IOException;
+import java.sql.Time;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,14 +55,16 @@ public class CompareFragment extends Fragment {
 
     private ImageView addComparisons;
     private Button removeComparisons;
-    private static List<ImageView> beforeList = new ArrayList<>(), afterList = new ArrayList<>();
+    public static List<String> uBeforeList = new ArrayList<>(), uAfterList = new ArrayList<>();
     private List<Button> deleteBtnList = new ArrayList<>();
     private static RecyclerView rvComparisons;
     public static CompareAdapter adapter;
+    private static Activity activity;
 
-    private FirebaseAuth firebaseAuth;
-    private FirebaseStorage firebaseStorage;
-    private StorageReference storageReference;
+    private static FirebaseAuth firebaseAuth;
+    private static FirebaseStorage firebaseStorage;
+    private static StorageReference storageReference;
+    private DatabaseReference databaseReference;
     private Uri fillerImage;
 
     // TODO: Rename parameter arguments, choose names that match
@@ -107,94 +113,195 @@ public class CompareFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_compare, container, false);
         setupUIviews(view);
+        activity = getActivity();
 
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseStorage = FirebaseStorage.getInstance();
         storageReference = firebaseStorage.getReference();
+        databaseReference = FirebaseDatabase.getInstance().getReference(firebaseAuth.getUid());
 
+        checkIfChildExists();
         addExistingComparisons();
 
         addComparisons.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addImagesToList();
+                checkIfChildExists();
+                fillURIList();
 
-                beforeList.get(beforeList.size()-1).setOnClickListener(new View.OnClickListener() {
+                final Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
                     @Override
-                    public void onClick(View v) {
-                        Intent gallery = new Intent();
-                        gallery.setType("image/*");
-                        gallery.setAction(Intent.ACTION_GET_CONTENT);
-                        getActivity().startActivityForResult(Intent.createChooser(gallery, "Select Image"), 1);
+                    public void run() {
+                        Log.d("Lists: ", uBeforeList.toString());
+                        adapter = new CompareAdapter(getActivity(), uBeforeList, uAfterList, deleteBtnList);
+                        rvComparisons.setAdapter(adapter);
+                        rvComparisons.setLayoutManager(new LinearLayoutManager(getActivity()));;
                     }
-                });
-
-                afterList.get(afterList.size()-1).setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent gallery = new Intent();
-                        gallery.setType("image/*");
-                        gallery.setAction(Intent.ACTION_GET_CONTENT);
-                        getActivity().startActivityForResult(Intent.createChooser(gallery, "Select Image"), 3);
-                    }
-                });
-
-
-                adapter = new CompareAdapter(getActivity(), beforeList, afterList, deleteBtnList);
-                rvComparisons.setAdapter(adapter);
-                rvComparisons.setLayoutManager(new LinearLayoutManager(getActivity()));;
+                }, 1000);
 
                 delayButtonPress(addComparisons);
             }
         });
 
-
         return view;
     }
 
-    private void addExistingComparisons() {
-        beforeList.clear();
-        afterList.clear();
-        deleteBtnList.clear();
+    private void fillURIList() {
+        String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new java.util.Date());
+        storeImage("Before Pics", timeStamp);
+        storeImage("After Pics", timeStamp);
 
-        adapter = new CompareAdapter(getActivity(), beforeList, afterList, deleteBtnList);
-        rvComparisons.setAdapter(adapter);
-        rvComparisons.setLayoutManager(new LinearLayoutManager(getActivity()));
-        firebaseAuth = FirebaseAuth.getInstance();
+        uBeforeList.add(timeStamp);
+        uAfterList.add(timeStamp);
+        deleteBtnList.add(removeComparisons);
 
-        StorageReference ref = FirebaseStorage.getInstance().getReference(firebaseAuth.getUid()).child("Images").child("Before Pics");
-        ref.listAll().addOnSuccessListener(new OnSuccessListener<ListResult>() {
-            @Override
-            public void onSuccess(ListResult listResult) {
-                for(StorageReference fileRef : listResult.getItems()) {
-                    fillListWithImages();
-                    setOnClickListeners(beforeList, 1);
-                    setOnClickListeners(afterList, 3);
+        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference(firebaseAuth.getUid()).child("userBeforeList");
+        dbRef.setValue(uBeforeList);
 
-                }
-
-                adapter.notifyDataSetChanged();
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(getActivity(), "Error " + e, Toast.LENGTH_LONG).show();
-            }
-        });
-
-        Log.d("List Here: ", beforeList.toString());
+        dbRef = FirebaseDatabase.getInstance().getReference(firebaseAuth.getUid()).child("userAfterList");
+        dbRef.setValue(uAfterList);
     }
 
-    public void setOnClickListeners(List<ImageView> list, int requestCode) {
-        list.get(list.size()-1).setOnClickListener(new View.OnClickListener() {
+    private void addExistingComparisons() {
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference(firebaseAuth.getUid());
+        ref.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onClick(View v) {
-                Intent gallery = new Intent();
-                gallery.setType("image/*");
-                gallery.setAction(Intent.ACTION_GET_CONTENT);
-                getActivity().startActivityForResult(Intent.createChooser(gallery, "Select Image"), requestCode);
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(snapshot.hasChild("userBeforeList")) {
+                    List<String> temp = new ArrayList<>();
+                    List<Button> tempDelBtns = new ArrayList<>();
+                    for(DataSnapshot ds : snapshot.child("userBeforeList").getChildren()) {
+                        String uniqueID = ds.getValue(String.class);
+                        temp.add(uniqueID);
+                        tempDelBtns.add(removeComparisons);
+                    }
+                    uBeforeList = new ArrayList<>(temp);
+                    deleteBtnList = new ArrayList<>(tempDelBtns);
+                }
+
+                if(snapshot.hasChild("userAfterList")) {
+                    List<String> temp = new ArrayList<>();
+                    for(DataSnapshot ds : snapshot.child("userAfterList").getChildren()) {
+                        String uniqueID = ds.getValue(String.class);
+                        temp.add(uniqueID);
+                    }
+                    uAfterList = new ArrayList<>(temp);
+                }
+
+                adapter = new CompareAdapter(getActivity(), uBeforeList, uAfterList, deleteBtnList);
+                rvComparisons.setAdapter(adapter);
+                rvComparisons.setLayoutManager(new LinearLayoutManager(getActivity()));;
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(getActivity(), error.getCode(), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void checkIfChildExists() {
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference(firebaseAuth.getUid());
+        ref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (!snapshot.hasChild("userAfterList")) {
+                    uAfterList.clear();
+                    uBeforeList.clear();
+                    deleteBtnList.clear();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) { Toast.makeText(getActivity(), error.getCode(), Toast.LENGTH_SHORT).show(); } });
+    }
+
+    public void shrinkFirebaseLists(int pos, String beforePic, String afterPic) {
+        removeFromStorage(beforePic, afterPic);
+
+        databaseReference = FirebaseDatabase.getInstance().getReference(firebaseAuth.getUid()).child("userBeforeList");
+        databaseReference.child(Integer.toString(pos)).removeValue();
+        databaseReference = FirebaseDatabase.getInstance().getReference(firebaseAuth.getUid()).child("userAfterList");
+        databaseReference.child(Integer.toString(pos)).removeValue();
+
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference(firebaseAuth.getUid());
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(snapshot.hasChild("userBeforeList")) {
+                    List<String> temp = new ArrayList<>();
+                    List<Button> tempDelBtns = new ArrayList<>();
+                    for(DataSnapshot ds : snapshot.child("userBeforeList").getChildren()) {
+                        if(uBeforeList.size() > 0) {
+                            String uniqueID = ds.getValue(String.class);
+                            temp.add(uniqueID);
+                            tempDelBtns.add(removeComparisons);
+                        }
+                    }
+                    databaseReference = FirebaseDatabase.getInstance().getReference(firebaseAuth.getUid());
+                    databaseReference.child("userBeforeList").removeValue();
+                    uBeforeList = new ArrayList<>(temp);
+                    deleteBtnList = new ArrayList<>(tempDelBtns);
+                    databaseReference = databaseReference.child("userBeforeList");
+                    databaseReference.setValue(uBeforeList);
+                }
+
+                if(snapshot.hasChild("userAfterList")) {
+                    List<String> temp = new ArrayList<>();
+                    for(DataSnapshot ds : snapshot.child("userAfterList").getChildren()) {
+                        if(uBeforeList.size() > 0) {
+                            String uniqueID = ds.getValue(String.class);
+                            temp.add(uniqueID);
+                        }
+                    }
+                    databaseReference = FirebaseDatabase.getInstance().getReference(firebaseAuth.getUid());
+                    databaseReference.child("userAfterList").removeValue();
+                    uAfterList = new ArrayList<>(temp);
+                    databaseReference = databaseReference.child("userAfterList");
+                    databaseReference.setValue(uAfterList);
+                }
+                adapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(getActivity(), error.getCode(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void removeFromStorage(String beforeUniqueID, String afterUniqueID) {
+        StorageReference storage = firebaseStorage.getReference(firebaseAuth.getUid()).child("Images").child("Before Pics").child(beforeUniqueID);
+        storage.delete();
+
+        storage = firebaseStorage.getReference(firebaseAuth.getUid()).child("Images").child("After Pics").child(afterUniqueID);
+        storage.delete();
+    }
+
+    public void storeImage(String child, String uniqueID) {
+        fillerImage = Uri.parse("android.resource://" + getActivity().getPackageName() + "/" + R.drawable.default_profile_picture);
+        StorageReference imageReference = firebaseStorage.getReference().child(firebaseAuth.getUid()).child("Images").child(child).child(uniqueID);
+        UploadTask uploadTask = imageReference.putFile(fillerImage);
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.d("Fail: ", e.toString());
+            }
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void
+            onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                Log.d("Success: ", "Picture Successfully Uploaded.");
+            }
+        });
+    }
+
+    public void chooseImageFromGallery(int requestCode) {
+        Intent gallery = new Intent();
+        gallery.setType("image/*");
+        gallery.setAction(Intent.ACTION_GET_CONTENT);
+        activity.startActivityForResult(Intent.createChooser(gallery, "Select Image"), requestCode);
     }
 
     private void setupUIviews(View view) {
@@ -203,60 +310,16 @@ public class CompareFragment extends Fragment {
         removeComparisons = view.findViewById(R.id.btnRemoveCompare);
     }
 
-    private void addImagesToList() {
-        ImageView fillerImg = new ImageView(getActivity());
-        ImageView fillerImg2 = new ImageView(getActivity());
-        fillerImg.setImageResource(R.drawable.default_profile_picture);
-        fillerImg2.setImageResource(R.drawable.default_profile_picture);
-        beforeList.add(fillerImg);
-        afterList.add(fillerImg2);
-        storeImage(beforeList.size()-1, "Before Pics");
-        storeImage(afterList.size()-1, "After Pics");
-        deleteBtnList.add(removeComparisons);
-        //adapter.notifyDataSetChanged();
-    }
-
-    private void fillListWithImages() {
-        ImageView fillerImg = new ImageView(getActivity());
-        ImageView fillerImg2 = new ImageView(getActivity());
-        fillerImg.setImageResource(R.drawable.default_profile_picture);
-        fillerImg2.setImageResource(R.drawable.default_profile_picture);
-        beforeList.add(fillerImg);
-        afterList.add(fillerImg2);
-        deleteBtnList.add(removeComparisons);
-    }
-
-    public void storeImage(int position, String child) {
-        fillerImage = Uri.parse("android.resource://com.example.fitnessprogresstracker/" + R.drawable.default_profile_picture);
-        StorageReference imageReference = storageReference.child(firebaseAuth.getUid()).child("Images").child(child).child(Integer.toString(position));
-        UploadTask uploadTask = imageReference.putFile(fillerImage);
-        uploadTask.addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(getActivity(), "Upload Failed.", Toast.LENGTH_SHORT).show();
-            }
-        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void
-            onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                Toast.makeText(getActivity(), "Picture Successfully Uploaded.", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
     public CompareAdapter getAdapter() {
         return adapter;
     }
 
-    public List<ImageView> getBeforeList() {
-        return beforeList;
+    public List<String> getBeforeList() {
+        return uBeforeList;
     }
 
-    public List<ImageView> getAfterList() { return afterList; }
+    public List<String> getAfterList() { return uAfterList; }
 
-    public RecyclerView getRV() {
-        return rvComparisons;
-    }
 
     private void delayButtonPress(ImageView myButton) {
         myButton.setEnabled(false);
@@ -271,6 +334,7 @@ public class CompareFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
     }
 
 

@@ -24,27 +24,35 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.ListResult;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import static androidx.core.app.ActivityCompat.startActivityForResult;
 
 public class CompareAdapter extends RecyclerView.Adapter<CompareAdapter.MyViewHolder> {
 
-    List<ImageView> beforePics, afterPics;
+    static List<String> beforePics, afterPics;
     List<Button> deleteBtns;
     Context context;
     RecyclerView.ViewHolder viewHolder;
     public static int pos1, pos2;
+    CompareFragment cf = new CompareFragment();
 
-    public CompareAdapter(Context ct, List<ImageView> beforePics, List<ImageView> afterPics, List<Button> deleteBtns) {
+    public CompareAdapter(Context ct, List<String> beforePics, List<String> afterPics, List<Button> deleteBtns) {
         context = ct;
         this.beforePics = beforePics;
         this.afterPics = afterPics;
@@ -64,40 +72,41 @@ public class CompareAdapter extends RecyclerView.Adapter<CompareAdapter.MyViewHo
 
     @Override
     public void onBindViewHolder(@NonNull CompareAdapter.MyViewHolder holder, int position) {
-
-        Log.d("Positions2" , Integer.toString(position));
         FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
-        StorageReference ref = FirebaseStorage.getInstance().getReference(firebaseAuth.getUid()).child("Images").child("Before Pics");
-        ref.child(Integer.toString(position)).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+        FirebaseStorage firebaseStorage = FirebaseStorage.getInstance();
+
+        String beforePic = beforePics.get(position);
+        String afterPic = afterPics.get(position);
+
+
+        // DO THIS IN DIFFERENT CLASS AND STORE DRAWABLES IN HOLDER INSTEAD?
+        StorageReference storageReference = firebaseStorage.getReference(firebaseAuth.getUid()).child("Images");
+        storageReference.child("Before Pics").child(beforePic).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
                 Picasso.get().load(uri).fit().centerCrop().into(holder.before);
             }
         });
 
-        ref = FirebaseStorage.getInstance().getReference(firebaseAuth.getUid()).child("Images").child("After Pics");
-        ref.child(Integer.toString(position)).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+        storageReference.child("After Pics").child(afterPic).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
                 Picasso.get().load(uri).fit().centerCrop().into(holder.after);
             }
         });
 
-        
-        holder.before.setImageDrawable(beforePics.get(position).getDrawable());
         holder.before.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                beforePics.get(position).performClick();
+                cf.chooseImageFromGallery(1);
                 pos1 = position;
             }
         });
 
-        holder.after.setImageDrawable(afterPics.get(position).getDrawable());
         holder.after.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                afterPics.get(position).performClick();
+                cf.chooseImageFromGallery(3);
                 pos2 = position;
             }
         });
@@ -105,6 +114,9 @@ public class CompareAdapter extends RecyclerView.Adapter<CompareAdapter.MyViewHo
         holder.delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                String delBeforePic = beforePics.get(position);
+                String delAfterPic = afterPics.get(position);
+
                 beforePics.remove(position);
                 afterPics.remove(position);
                 deleteBtns.remove(position);
@@ -113,6 +125,8 @@ public class CompareAdapter extends RecyclerView.Adapter<CompareAdapter.MyViewHo
                 notifyItemRangeChanged(position, beforePics.size());
                 notifyItemRangeChanged(position, afterPics.size());
                 notifyItemRangeChanged(position, deleteBtns.size());
+
+                cf.shrinkFirebaseLists(position, delBeforePic, delAfterPic);
 
                 delayButtonPress(holder.delete);
             }
@@ -135,7 +149,7 @@ public class CompareAdapter extends RecyclerView.Adapter<CompareAdapter.MyViewHo
             public void run() {
                 myButton.setEnabled(true);
             }
-        }, 1000);
+        }, 1500);
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {

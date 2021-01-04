@@ -222,16 +222,15 @@ public class ProgressFragment extends Fragment {
     }
 
     private int subtractRemainingCalories() {
-            calInputStr = (calorieInput.getEditText().getText()).toString();
-            calRemStr = caloriesRemaining.getText().toString();
-            int cal = Integer.parseInt(calInputStr);
-            int calRem = Integer.parseInt(calRemStr);
+        calInputStr = (calorieInput.getEditText().getText()).toString();
+        calRemStr = caloriesRemaining.getText().toString();
+        int cal = Integer.parseInt(calInputStr);
+        int calRem = Integer.parseInt(calRemStr);
 
         return calRem - cal;
     }
 
     public void revertRemainingCalories(int deletedCalories, int position) {
-
         firebaseAuth = FirebaseAuth.getInstance();
 
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference(firebaseAuth.getUid());
@@ -245,7 +244,6 @@ public class ProgressFragment extends Fragment {
                     String revertedCals = Integer.toString(calRem + deletedCalories);
                     caloriesRemaining.setText(revertedCals);
 
-
                     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference(firebaseAuth.getUid());
                     databaseReference = databaseReference.child("userCalories");
                     databaseReference.setValue(revertedCals);
@@ -257,8 +255,6 @@ public class ProgressFragment extends Fragment {
                 Toast.makeText(getActivity(), error.getCode(), Toast.LENGTH_SHORT).show();
             }
         });
-
-
 
         databaseReference = FirebaseDatabase.getInstance().getReference(firebaseAuth.getUid()).child("userFoodList");
         databaseReference.child(Integer.toString(position)).removeValue();
