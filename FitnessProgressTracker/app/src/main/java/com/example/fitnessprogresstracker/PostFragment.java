@@ -136,7 +136,6 @@ public class PostFragment<RecylcerView> extends Fragment {
                 if(validate()) {
                     addItemsToList();
                     sendUserData();
-                    Toast.makeText(getActivity(), postContent, Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -216,9 +215,5 @@ public class PostFragment<RecylcerView> extends Fragment {
 
         postsRef = postsRef.child("postContent");
         postsRef.setValue(postContent);
-
-
-//        UserPost userPost = new UserPost(timeStampStr, postContent);
-//        postsRef.setValue(userPost);
     }
 }

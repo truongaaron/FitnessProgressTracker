@@ -118,6 +118,9 @@ public class UpdateProfile extends AppCompatActivity {
                 databaseReference.setValue(userProfile);
 
                 StorageReference imageReference = storageReference.child(firebaseAuth.getUid()).child("Images").child("Profile Pic"); // User Id/Images/profile_pic.png
+                if(imagePath == null) {
+                    imagePath = Uri.parse("android.resource://" + UpdateProfile.this.getPackageName() + "/" + R.drawable.default_profile_picture);
+                }
                 UploadTask uploadTask = imageReference.putFile(imagePath);
                 uploadTask.addOnFailureListener(new OnFailureListener() {
                     @Override

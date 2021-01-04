@@ -229,6 +229,9 @@ public class RegistrationActivity extends AppCompatActivity implements AdapterVi
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
         DatabaseReference myRef = firebaseDatabase.getReference(firebaseAuth.getUid());
         StorageReference imageReference = storageReference.child(firebaseAuth.getUid()).child("Images").child("Profile Pic"); // User Id/Images/profile_pic.png
+        if(imagePath == null) {
+            imagePath = Uri.parse("android.resource://" + RegistrationActivity.this.getPackageName() + "/" + R.drawable.default_profile_picture);
+        }
         UploadTask uploadTask = imageReference.putFile(imagePath);
         uploadTask.addOnFailureListener(new OnFailureListener() {
             @Override
