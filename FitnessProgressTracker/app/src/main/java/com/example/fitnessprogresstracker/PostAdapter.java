@@ -1,6 +1,7 @@
 package com.example.fitnessprogresstracker;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,17 +11,21 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.List;
+
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> {
 
-    String names[], posts[];
-    int images[];
+    List<String> timeStamps, lposts;
+    ImageView removeBtn;
     Context context;
 
-    public PostAdapter(Context ct, String s1[], String s2[], int imgs[]) {
+    PostFragment pf = new PostFragment();
+
+    public PostAdapter(Context ct, List<String> timeStamps, List<String> posts, ImageView removeBtn) {
         context = ct;
-        names = s1;
-        posts = s2;
-        images = imgs;
+        this.timeStamps = timeStamps;
+        this.lposts = posts;
+        this.removeBtn = removeBtn;
     }
 
     @NonNull
@@ -33,26 +38,54 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        holder.name.setText(names[position]);
-        holder.postContent.setText(posts[position]);
-        // holder.profilePic.setImageResource(images[position]);
+        holder.timeStamp.setText(timeStamps.get(position));
+        holder.postContent.setText(lposts.get(position));
+
+        holder.deletePostBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String parentName = timeStamps.get(position).replaceAll("\\p{Punct}", "");
+                String parentNameStr = parentName.substring(5, 13) + " " + parentName.substring(19,25);
+
+                timeStamps.remove(position);
+                lposts.remove(position);
+
+                notifyItemRemoved(position);
+                notifyItemRangeChanged(position, timeStamps.size());
+                notifyItemRangeChanged(position, lposts.size());
+
+                pf.shrinkFirebaseList(parentNameStr);
+
+                delayButtonPress(holder.deletePostBtn);
+            }
+        });
+    }
+
+    private void delayButtonPress(ImageView myButton) {
+        myButton.setEnabled(false);
+        myButton.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                myButton.setEnabled(true);
+            }
+        }, 1000);
     }
 
     @Override
     public int getItemCount() {
-        return names.length;
+        return timeStamps.size();
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
 
-        TextView name, postContent;
-        ImageView profilePic;
+        TextView timeStamp, postContent;
+        ImageView deletePostBtn;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
-            name = itemView.findViewById(R.id.tvFoodListName);
-            postContent = itemView.findViewById(R.id.tvFoodListName);
-            profilePic = itemView.findViewById(R.id.ivFeedProfilePicture);
+            timeStamp = itemView.findViewById(R.id.tvTimeStamp);
+            postContent = itemView.findViewById(R.id.etPost);
+            deletePostBtn = itemView.findViewById(R.id.ivDeletePost);
         }
     }
 }

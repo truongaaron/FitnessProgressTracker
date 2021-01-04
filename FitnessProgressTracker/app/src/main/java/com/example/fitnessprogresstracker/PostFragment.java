@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -30,6 +31,10 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link PostFragment#newInstance} factory method to
@@ -43,11 +48,16 @@ public class PostFragment<RecylcerView> extends Fragment {
     private StorageReference storageReference;
     private DatabaseReference databaseReference;
 
+    private TextView timeStamp;
     private EditText writePost;
-    private Button post;
-    private ImageView postProfilePic;
-    private String name, postContent;
+    private Button postBtn;
+    private ImageView postProfilePic, deletePost;
+    private String timeStampStr, postContent;
     private RecyclerView rvPosts;
+    private PostAdapter postAdapter;
+
+    private List<String> timeStamps = new ArrayList<>(), posts = new ArrayList<>();
+
 
     private String userNames[], postsArr[];
     int images[] = {};
@@ -92,8 +102,6 @@ public class PostFragment<RecylcerView> extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-
-
     }
 
     @Override
@@ -102,38 +110,14 @@ public class PostFragment<RecylcerView> extends Fragment {
 
         postProfilePic = view.findViewById(R.id.ivPostProfilePic);
         writePost = view.findViewById(R.id.etWritePost);
-        post = view.findViewById(R.id.btnPostToFeed);
+        postBtn = view.findViewById(R.id.btnPostToFeed);
         rvPosts = view.findViewById(R.id.rvPosts);
+        timeStamp = view.findViewById(R.id.tvTimeStamp);
+        deletePost = view.findViewById(R.id.ivDeletePost);
 
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseDatabase = FirebaseDatabase.getInstance();
         firebaseStorage = FirebaseStorage.getInstance();
-
-        DatabaseReference myRef = firebaseDatabase.getReference(firebaseAuth.getUid());
-        myRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                UserProfile userProfile = snapshot.getValue(UserProfile.class);
-                name = userProfile.getUserName();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(getActivity(), error.getCode(), Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        post.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                postContent = writePost.getText().toString();
-                sendUserData();
-                Toast.makeText(getActivity(), postContent, Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        databaseReference = firebaseDatabase.getReference(firebaseAuth.getUid());
 
         storageReference = firebaseStorage.getReference();
         storageReference.child(firebaseAuth.getUid()).child("Images/Profile Pic").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
@@ -143,22 +127,98 @@ public class PostFragment<RecylcerView> extends Fragment {
             }
         });
 
-        userNames = getResources().getStringArray(R.array.user_names);
-        postsArr = getResources().getStringArray(R.array.post_content);
+        addExistingPosts();
 
-        PostAdapter postAdapter = new PostAdapter(getActivity(), userNames, postsArr, images);
+        postBtn.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                if(validate()) {
+                    addItemsToList();
+                    sendUserData();
+                    Toast.makeText(getActivity(), postContent, Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        databaseReference = firebaseDatabase.getReference(firebaseAuth.getUid());
+
+        postAdapter = new PostAdapter(getActivity(), timeStamps, posts, deletePost);
         rvPosts.setAdapter(postAdapter);
         rvPosts.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         return view;
     }
 
+    public void addExistingPosts() {
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference(firebaseAuth.getUid()).child("Posts");
+        ref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                List<String> tempTimeStamps = new ArrayList<>();
+                List<String> tempPosts = new ArrayList<>();
+                for(DataSnapshot ds : snapshot.getChildren()) {
+                    String timeStamp = ds.getKey();
+                    String post = ds.child("postContent").getValue(String.class);
+                    tempTimeStamps.add(timeStamp.format("Date: %s/%s/%s Time: %s:%s.%s",
+                            timeStamp.substring(0, 2),
+                            timeStamp.substring(2, 4),
+                            timeStamp.substring(4, 8),
+                            timeStamp.substring(9, 11),
+                            timeStamp.substring(11, 13),
+                            timeStamp.substring(13, 15)));
+                    tempPosts.add(post);
+                }
+
+                timeStamps = new ArrayList<>(tempTimeStamps);
+                posts = new ArrayList<>(tempPosts);
+
+                postAdapter = new PostAdapter(getActivity(), timeStamps, posts, deletePost);
+                rvPosts.setAdapter(postAdapter);
+                rvPosts.setLayoutManager(new LinearLayoutManager(getActivity()));
+            }
+
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(getActivity(), error.getCode(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    public void shrinkFirebaseList(String parent) {
+        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference(firebaseAuth.getUid());
+        databaseReference.child("Posts").child(parent).removeValue();
+    }
+
+    public boolean validate() {
+        postContent = writePost.getText().toString();
+
+        if(postContent.isEmpty()) {
+            Toast.makeText(getActivity(), "Post can't be empty! Post must have at least one character.", Toast.LENGTH_LONG).show();
+            return false;
+        }
+
+        return true;
+    }
+
+    public void addItemsToList() {
+        timeStampStr = new SimpleDateFormat("MM.dd.yyyy HH:mm.ss").format(new java.util.Date());
+        timeStamps.add(timeStampStr);
+        posts.add(writePost.getText().toString());
+    }
+
     private void sendUserData() {
-        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-        DatabaseReference postsRef = firebaseDatabase.getReference(firebaseAuth.getUid()).child("Posts");
+        DatabaseReference postsRef = FirebaseDatabase.getInstance().getReference(firebaseAuth.getUid()).child("Posts");
+        postsRef = postsRef.child(timeStampStr.replaceAll("\\p{Punct}", ""));
+        postsRef.setValue(timeStampStr);
+
+        postsRef = postsRef.child("postContent");
+        postsRef.setValue(postContent);
 
 
-        UserPost userPost = new UserPost(name, postContent);
-        postsRef.setValue(userPost);
+//        UserPost userPost = new UserPost(timeStampStr, postContent);
+//        postsRef.setValue(userPost);
     }
 }

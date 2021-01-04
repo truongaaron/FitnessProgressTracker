@@ -2,25 +2,25 @@ package com.example.fitnessprogresstracker;
 
 public class UserPost {
 
-    public String name;
+    public String timeStamp;
     public String post;
 
     public UserPost() {
 
     }
 
-    public UserPost(String name, String post) {
-        this.name = name;
+    public UserPost(String timeStamp, String post) {
+        this.timeStamp = timeStamp;
         this.post = post;
     }
 
 
-    public String getName() {
-        return name;
+    public String getTimeStamp() {
+        return timeStamp;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setTimeStamp(String timeStamp) {
+        this.timeStamp = timeStamp;
     }
 
     public String getPost() {
